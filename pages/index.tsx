@@ -1,8 +1,17 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import authRequired from '@services/authRequired'
 import styles from '../styles/Home.module.css'
+import React from 'react'
+import LoadingScreen from '@components/ui/LoadingScreen'
 
 export default function Home() {
+  const user = authRequired({})
+
+  if (!user) {
+    return <LoadingScreen />
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -66,4 +75,21 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+export async function getStaticProps() {
+  // const { user } = useUI()
+
+  // if (!user) {
+  //   return {
+  //     redirect: {
+  //       destination: '/login',
+  //       permanent: false,
+  //     },
+  //   }
+  // }
+
+  return {
+    props: {},
+  }
 }
