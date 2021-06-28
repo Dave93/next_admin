@@ -17,6 +17,9 @@ app.prepare().then(() => {
   server.post('*', (req, res) => {
     return handle(req, res)
   })
+  server.put('*', (req, res) => {
+    return handle(req, res)
+  })
 
   server.listen(process.env.PORT, (err) => {
     if (err) throw err
