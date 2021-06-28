@@ -94,37 +94,33 @@ const Terminals = () => {
     fetchData()
   }, [])
 
-  const Tooltip = (_: any, record: any) => {
-    return (
-      <Tooltip title="Редактировать">
-        <Button
-          type="primary"
-          shape="circle"
-          size="small"
-          icon={<EditOutlined />}
-          onClick={() => {
-            editRecord(record)
-          }}
-        />
-      </Tooltip>
-    )
-  }
-
-  const ActiveField = (_: any) => {
-    return <Switch disabled defaultChecked={_} />
-  }
-
   const columns = [
     {
       title: 'Действие',
       dataIndex: 'action',
-      render: Tooltip,
+      render: (_: any, record: any) => {
+        return (
+          <Tooltip title="Редактировать">
+            <Button
+              type="primary"
+              shape="circle"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                editRecord(record)
+              }}
+            />
+          </Tooltip>
+        )
+      },
     },
     {
       title: 'Активность',
       dataIndex: 'active',
       key: 'active',
-      render: ActiveField,
+      render: (_: any) => {
+        return <Switch disabled defaultChecked={_} />
+      },
     },
     {
       title: 'Терминал ид',

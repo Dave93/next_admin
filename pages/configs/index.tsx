@@ -95,27 +95,25 @@ const Configs = () => {
     fetchData()
   }, [])
 
-  const Tooltip = (_: any, record: any) => {
-    return (
-      <Tooltip title="Редактировать">
-        <Button
-          type="primary"
-          shape="circle"
-          size="small"
-          icon={<EditOutlined />}
-          onClick={() => {
-            editRecord(record)
-          }}
-        />
-      </Tooltip>
-    )
-  }
-
   const columns = [
     {
       title: 'Действие',
       dataIndex: 'action',
-      render: Tooltip,
+      render: (_: any, record: any) => {
+        return (
+          <Tooltip title="Редактировать">
+            <Button
+              type="primary"
+              shape="circle"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                editRecord(record)
+              }}
+            />
+          </Tooltip>
+        )
+      },
     },
     {
       title: 'Код',

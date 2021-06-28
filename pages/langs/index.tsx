@@ -25,7 +25,7 @@ import LoadingScreen from '@components/ui/LoadingScreen'
 const { publicRuntimeConfig } = getConfig()
 const format = 'HH:mm'
 
-const Langs = () => {
+export default function Langs() {
   const user = authRequired({})
   const {
     darkModeActive, // boolean - whether the dark mode is active or not
@@ -94,27 +94,27 @@ const Langs = () => {
     fetchData()
   }, [])
 
-  const Tooltip = (_: any, record: any) => {
-    return (
-      <Tooltip title="Редактировать">
-        <Button
-          type="primary"
-          shape="circle"
-          size="small"
-          icon={<EditOutlined />}
-          onClick={() => {
-            editRecord(record)
-          }}
-        />
-      </Tooltip>
-    )
-  }
+  // const Tooltip =
 
   const columns = [
     {
       title: 'Действие',
       dataIndex: 'action',
-      render: Tooltip,
+      render: (_: any, record: any) => {
+        return (
+          <Tooltip title="Редактировать">
+            <Button
+              type="primary"
+              shape="circle"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                editRecord(record)
+              }}
+            />
+          </Tooltip>
+        )
+      },
     },
     {
       title: 'Код',
@@ -264,6 +264,3 @@ const Langs = () => {
     </MainLayout>
   )
 }
-
-Langs.displayName = 'Langs'
-export default Langs
