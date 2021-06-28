@@ -8,7 +8,14 @@ const authRequired: FC = () => {
   useEffect(() => {
     if (!user) {
       router.push('/login')
-    } /* else {
+    } else {
+      const userRoles = user.user.roles.map((role: any) => role.name)
+      if (!userRoles.includes('admin')) {
+        router.push('/permission_denied')
+      }
+    }
+
+    /* else {
     const userRoles = auth.user.roles.map((role) => role.name)
     if (!userRoles.includes('admin')) {
       router.push('/login')

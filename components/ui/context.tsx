@@ -1,5 +1,16 @@
 import React, { FC, useCallback, useMemo } from 'react'
 
+let userData: any = null
+
+if (typeof window !== 'undefined') {
+  userData = localStorage.getItem('mijoz')
+  try {
+    userData = Buffer.from(userData, 'base64')
+    userData = userData.toString('ascii')
+    userData = JSON.parse(userData)
+  } catch (e) {}
+}
+
 interface AnyObject {
   [key: string]: any
 }
@@ -20,7 +31,7 @@ export interface State {
 
 const initialState = {
   counter: 0,
-  user: null,
+  user: userData,
 }
 
 type Action =
@@ -40,6 +51,9 @@ UIContext.displayName = 'UIContext'
 function uiReducer(state: State, action: Action) {
   switch (action.type) {
     case 'SET_USER_DATA': {
+      let userNewData = JSON.stringify(action.value)
+      userNewData = Buffer.from(userNewData).toString('base64')
+      localStorage.setItem('mijoz', userNewData)
       return {
         ...state,
         user: action.value,

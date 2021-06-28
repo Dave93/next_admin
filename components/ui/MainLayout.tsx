@@ -1,0 +1,129 @@
+import { Layout, Menu, Dropdown } from 'antd'
+import {
+  UploadOutlined,
+  UserOutlined,
+  TranslationOutlined,
+  HomeOutlined,
+  DownOutlined,
+  SettingOutlined,
+  AppstoreOutlined,
+} from '@ant-design/icons'
+import Head from 'next/head'
+import { LocationMarkerIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useDarkMode } from 'next-dark-mode'
+// import { useAuth } from "../../services/useAuth";
+import styles from './MainLayout.module.css'
+import React, { ReactNode } from 'react'
+import { useUI } from '@components/ui/context'
+
+const { Header, Content, Footer, Sider } = Layout
+const { SubMenu } = Menu
+
+export default function MainLayout({
+  children,
+  title = '',
+}: {
+  children: ReactNode
+  title: string
+}) {
+  const route = useRouter()
+  // const { logout } = useAuth();
+
+  const {
+    darkModeActive, // boolean - whether the dark mode is active or not
+  } = useDarkMode()
+
+  // const signOut = async () => {
+  //   console.log("davr");
+  //   await logout();
+  //   route.route.push("/login");
+  // };
+
+  const logout = () => {
+    localStorage.removeItem('mijoz')
+    return route.push('/login')
+  }
+
+  const { user } = useUI()
+  const menu = (
+    <Menu>
+      <Menu.Item danger key="logout" onClick={logout}>
+        <span>Выйти</span>
+      </Menu.Item>
+    </Menu>
+  )
+
+  return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Layout>
+        <Sider
+          breakpoint="lg"
+          collapsedWidth="0"
+          theme={darkModeActive ? 'dark' : 'light'}
+        >
+          <div className={styles.logo} />
+          <Menu
+            theme={darkModeActive ? 'dark' : 'light'}
+            mode="inline"
+            defaultSelectedKeys={[route.pathname]}
+          >
+            <Menu.Item key="/" icon={<HomeOutlined />}>
+              <Link href="/">Главная</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="/terminals"
+              icon={
+                <LocationMarkerIcon
+                  className="h-[16px] w-[16px]"
+                  aria-hidden="true"
+                />
+              }
+            >
+              <Link href="/terminals">Терминалы</Link>
+            </Menu.Item>
+            <Menu.Item key="/configs" icon={<SettingOutlined />}>
+              <Link href="/configs">Настройки</Link>
+            </Menu.Item>
+            <Menu.Item key="/langs" icon={<TranslationOutlined />}>
+              <Link href="/langs">Языки</Link>
+            </Menu.Item>
+            <SubMenu key="sub1" icon={<AppstoreOutlined />} title="Каталог">
+              <Menu.Item key="/categories">
+                <Link href="/categories">Категории</Link>
+              </Menu.Item>
+            </SubMenu>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Header className={`${styles.siteLayoutSubHeaderBackground} px-3`}>
+            <Dropdown overlay={menu}>
+              <a
+                className="ant-dropdown-link"
+                onClick={(e) => e.preventDefault()}
+              >
+                {user?.user?.name} <DownOutlined />
+              </a>
+            </Dropdown>
+          </Header>
+          <Content style={{ margin: '24px 16px 0' }}>
+            <div
+              className={styles.siteLayoutBackground}
+              style={{ padding: 24, minHeight: 360 }}
+            >
+              {children}
+            </div>
+          </Content>
+          <Footer style={{ textAlign: 'center' }}>
+            Havoqand ©{new Date().getFullYear()} Created with &hearts; by Davr
+          </Footer>
+        </Layout>
+      </Layout>
+    </>
+  )
+}

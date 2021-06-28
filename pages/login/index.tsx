@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import Link from 'next/link'
+import Image from 'next/image'
 import { useMemo, useRef, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useForm, Controller } from 'react-hook-form'
@@ -29,7 +29,7 @@ let otpTimerRef: NodeJS.Timeout
 
 export default function Login() {
   const router = useRouter()
-  const { register, handleSubmit, control, watch } = useForm()
+  const { handleSubmit, control, watch } = useForm()
   const [isCodeSent, setCodeSent] = useState(false)
   const [isLoadingOtpSend, setIsLoadingOtpSend] = useState(false)
   const [otpCode, setOtpCode] = useState('')
@@ -71,7 +71,6 @@ export default function Login() {
   const sendOtpCode = async () => {
     setIsLoadingOtpSend(true)
     setSubmitError('')
-    console.log('davr')
     const csrfReq = await axios('https://api.hq.fungeek.net/api/keldi', {
       method: 'GET',
       headers: {
@@ -162,11 +161,16 @@ export default function Login() {
       setSubmitError(errors.opt_code_is_incorrect)
     } else {
       clearInterval(otpTimerRef)
-      console.log(result)
       if (result?.user?.roles?.length == 0) {
         router.push('/permission_denied')
+      } else {
+        const userRoles = result.user.roles.map((role: any) => role.name)
+        if (!userRoles.includes('admin')) {
+          return router.push('/permission_denied')
+        }
+        setUserData(result)
+        router.push('/')
       }
-      // setUserData(result)
     }
   }
 
@@ -197,13 +201,12 @@ export default function Login() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <img
-              className="mx-auto h-12 w-auto"
-              src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-              alt="Workflow"
-            />
+            <div className="flex justify-center m-auto w-auto">
+              <Image src="/login_logo.svg" width={40} height={40} />
+            </div>
+
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Sign in to your account
+              Авторизация
             </h2>
           </div>
           {submitError && (

@@ -1,0 +1,484 @@
+import Head from 'next/head'
+import {
+  Drawer,
+  Form,
+  Button,
+  Col,
+  Row,
+  Input,
+  Select,
+  DatePicker,
+  Table,
+  Space,
+  Tooltip,
+  TimePicker,
+  Switch,
+} from 'antd'
+import { PlusOutlined, SearchOutlined, EditOutlined } from '@ant-design/icons'
+import getConfig from 'next/config'
+import React, { useState, useRef, useEffect } from 'react'
+import axios from 'axios'
+import { useDarkMode } from 'next-dark-mode'
+import MainLayout from '@components/ui/MainLayout'
+import authRequired from '@services/authRequired'
+import LoadingScreen from '@components/ui/LoadingScreen'
+const { publicRuntimeConfig } = getConfig()
+const format = 'HH:mm'
+
+const Terminals = () => {
+  const user = authRequired({})
+  const {
+    darkModeActive, // boolean - whether the dark mode is active or not
+  } = useDarkMode()
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+  }, [])
+
+  const [isDrawerVisible, setDrawer] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  })
+  const [data, setData] = useState([])
+  const [editingRecord, setEditingRecord] = useState(null as any)
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false)
+  let webAddress = 'http://localhost:3000'
+  if (typeof window !== 'undefined') {
+    webAddress = window.location.origin
+  }
+
+  let searchInput = useRef(null)
+
+  const showDrawer = () => {
+    setDrawer(true)
+  }
+
+  const closeDrawer = () => {
+    setEditingRecord(null)
+    setDrawer(false)
+  }
+
+  const editRecord = (record: any) => {
+    setEditingRecord(record)
+    form.resetFields()
+    form.setFieldsValue(record)
+    setDrawer(true)
+  }
+
+  const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
+    confirm()
+    // this.setState({
+    //   searchText: selectedKeys[0],
+    //   searchedColumn: dataIndex,
+    // })
+  }
+
+  const handleReset = (clearFilters: any) => {
+    clearFilters()
+    // this.setState({ searchText: '' })
+  }
+
+  const fetchData = async () => {
+    setIsLoading(true)
+    const {
+      data: { data: result },
+    } = await axios.get(`${webAddress}/api/terminals`)
+    setData(result)
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const Tooltip = (_: any, record: any) => {
+    return (
+      <Tooltip title="Редактировать">
+        <Button
+          type="primary"
+          shape="circle"
+          size="small"
+          icon={<EditOutlined />}
+          onClick={() => {
+            editRecord(record)
+          }}
+        />
+      </Tooltip>
+    )
+  }
+
+  const ActiveField = (_: any) => {
+    return <Switch disabled defaultChecked={_} />
+  }
+
+  const columns = [
+    {
+      title: 'Действие',
+      dataIndex: 'action',
+      render: Tooltip,
+    },
+    {
+      title: 'Активность',
+      dataIndex: 'active',
+      key: 'active',
+      render: ActiveField,
+    },
+    {
+      title: 'Терминал ид',
+      dataIndex: 'terminal_id',
+      key: 'terminal_id',
+    },
+    {
+      title: 'Русский',
+      children: [
+        {
+          title: 'Название',
+          dataIndex: 'name',
+          key: 'name',
+          sorter: {
+            compare: (a: any, b: any) => a.name - b.name,
+          },
+        },
+        {
+          title: 'Описание',
+          dataIndex: 'desc',
+          key: 'desc',
+          sorter: {
+            compare: (a: any, b: any) => a.desc - b.desc,
+          },
+        },
+      ],
+    },
+    {
+      title: 'Узбекский',
+      children: [
+        {
+          title: 'Название',
+          dataIndex: 'name_uz',
+          key: 'name_uz',
+          sorter: {
+            compare: (a: any, b: any) => a.name_uz - b.name_uz,
+          },
+        },
+        {
+          title: 'Описание',
+          dataIndex: 'desc_uz',
+          key: 'desc_uz',
+          sorter: {
+            compare: (a: any, b: any) => a.desc_uz - b.desc_uz,
+          },
+        },
+      ],
+    },
+    {
+      title: 'Английский',
+      children: [
+        {
+          title: 'Название',
+          dataIndex: 'name_en',
+          key: 'name_en',
+          sorter: {
+            compare: (a: any, b: any) => a.name_en - b.name_en,
+          },
+        },
+        {
+          title: 'Описание',
+          dataIndex: 'desc_en',
+          key: 'desc_en',
+          sorter: {
+            compare: (a: any, b: any) => a.desc_en - b.desc_en,
+          },
+        },
+      ],
+    },
+    {
+      title: 'Время доставки',
+      dataIndex: 'delivery_time',
+      key: 'delivery_time',
+    },
+    {
+      title: 'Время самовывоза',
+      dataIndex: 'pickup_time',
+      key: 'pickup_time',
+    },
+    {
+      title: 'Широта',
+      dataIndex: 'latitude',
+      key: 'latitude',
+    },
+    {
+      title: 'Долгота',
+      dataIndex: 'longitude',
+      key: 'longitude',
+    },
+    {
+      title: 'ПН-СБ',
+      children: [
+        {
+          title: 'Время открытия',
+          dataIndex: 'open_work',
+          key: 'open_work',
+        },
+        {
+          title: 'Время закрытия',
+          dataIndex: 'close_work',
+          key: 'close_work',
+        },
+      ],
+    },
+    {
+      title: 'Воскресенье',
+      children: [
+        {
+          title: 'Время открытия',
+          dataIndex: 'open_weekend',
+          key: 'open_weekend',
+        },
+        {
+          title: 'Время закрытия',
+          dataIndex: 'close_weekend',
+          key: 'close_weekend',
+        },
+      ],
+    },
+    {
+      title: 'Телеграм группа',
+      dataIndex: 'tg_group',
+      key: 'tg_group',
+    },
+  ]
+  const [form] = Form.useForm()
+
+  const onFinish = async (values: any) => {
+    setIsSubmittingForm(true)
+    if (editingRecord) {
+      await axios.put(`${webAddress}/api/terminals/${editingRecord?.id}`, {
+        ...editingRecord,
+        ...values,
+      })
+    } else {
+      await axios.post(`${webAddress}/api/terminals/`, {
+        ...values,
+      })
+    }
+    setIsSubmittingForm(false)
+    closeDrawer()
+    fetchData()
+  }
+
+  const submitForm = () => {
+    form.submit()
+  }
+
+  const addRecord = () => {
+    setEditingRecord(null)
+    form.resetFields()
+    setDrawer(true)
+  }
+
+  const onSearch = async (value: any) => {
+    setIsLoading(true)
+    const {
+      data: { data: result },
+    } = await axios.get(`${webAddress}/api/terminals?search=${value}`)
+    setData(result)
+    setIsLoading(false)
+  }
+
+  return (
+    <MainLayout title="Terminals">
+      <div className="flex justify-between mb-3">
+        <Input.Search
+          loading={isLoading}
+          onSearch={onSearch}
+          style={{ maxWidth: 400 }}
+        />
+        <Button type="primary" onClick={addRecord}>
+          <PlusOutlined /> Добавить
+        </Button>
+      </div>
+      <Drawer
+        title={
+          editingRecord ? 'Редактировать терминал' : 'Добавить новый терминал'
+        }
+        width={720}
+        onClose={closeDrawer}
+        visible={isDrawerVisible}
+        bodyStyle={{ paddingBottom: 80 }}
+        footer={
+          <div
+            style={{
+              textAlign: 'right',
+            }}
+          >
+            <Button onClick={closeDrawer} style={{ marginRight: 8 }}>
+              Отмена
+            </Button>
+            <Button
+              onClick={submitForm}
+              loading={isSubmittingForm}
+              type="primary"
+            >
+              Сохранить
+            </Button>
+          </div>
+        }
+      >
+        <Form
+          layout="vertical"
+          form={form}
+          hideRequiredMark
+          size="small"
+          onFinish={onFinish}
+          initialValues={editingRecord ? editingRecord : undefined}
+        >
+          {editingRecord && (
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item label="Терминал ид">
+                  <span>{editingRecord?.terminal_id}</span>
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
+          {!editingRecord && (
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Терминал ид"
+                  name="terminal_id"
+                  rules={[
+                    { required: true, message: 'Просьба ввести ид терминала' },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="active"
+                label="Активность"
+                valuePropName="checked"
+              >
+                <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="name"
+                label="Название"
+                rules={[{ required: true, message: 'Просьба ввести название' }]}
+              >
+                <Input placeholder="Просьба ввести название" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="desc" label="Описание">
+                <Input.TextArea />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="name_uz" label="Название (уз.)">
+                <Input placeholder="Просьба ввести название" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="desc_uz" label="Описание (уз.)">
+                <Input.TextArea />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="name_en" label="Название (анг.)">
+                <Input placeholder="Просьба ввести название" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="desc_en" label="Описание (анг.)">
+                <Input.TextArea />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="delivery_time" label="Время доставки">
+                <TimePicker format={format} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="pickup_time" label="Время самовывоза">
+                <TimePicker format={format} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="latitude" label="Широта">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="longitude" label="Долгота">
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="open_work" label="Время открытия (ПН-СБ)">
+                <TimePicker format={format} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="close_work" label="Время закрытия (ПН-СБ)">
+                <TimePicker format={format} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="open_weekend" label="Время открытия (ВС)">
+                <TimePicker format={format} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="close_weekend" label="Время закрытия (ВС)">
+                <TimePicker format={format} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="tg_group" label="Группа в телеграм">
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Drawer>
+      <Table
+        columns={columns}
+        dataSource={data}
+        loading={isLoading}
+        rowKey="id"
+        scroll={{ x: 'calc(700px + 50%)' }}
+        size="small"
+        bordered
+      />
+    </MainLayout>
+  )
+}
+
+Terminals.displayName = 'Terminals'
+export default Terminals
