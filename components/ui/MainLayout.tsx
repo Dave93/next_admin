@@ -1,12 +1,12 @@
 import { Layout, Menu, Dropdown } from 'antd'
 import {
-  UploadOutlined,
   UserOutlined,
   TranslationOutlined,
   HomeOutlined,
   DownOutlined,
   SettingOutlined,
   AppstoreOutlined,
+  MenuOutlined,
 } from '@ant-design/icons'
 import Head from 'next/head'
 import { LocationMarkerIcon } from '@heroicons/react/outline'
@@ -92,6 +92,12 @@ export default function MainLayout({
             </Menu.Item>
             <Menu.Item key="/langs" icon={<TranslationOutlined />}>
               <Link href="/langs">Языки</Link>
+            </Menu.Item>
+            <Menu.Item key="/users" icon={<UserOutlined />}>
+              <Link href="/users">Пользователи</Link>
+            </Menu.Item>
+            <Menu.Item key="/menus" icon={<MenuOutlined />}>
+              <Link href="/menus">Пункты меню</Link>
             </Menu.Item>
             <SubMenu key="sub1" icon={<AppstoreOutlined />} title="Каталог">
               <Menu.Item key="/categories">
