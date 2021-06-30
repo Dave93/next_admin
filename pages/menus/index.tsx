@@ -1,10 +1,21 @@
 import Head from 'next/head'
-import { Drawer, Form, Button, Col, Row, Input, Table, Tooltip } from 'antd'
+import {
+  Drawer,
+  Form,
+  Button,
+  Col,
+  Row,
+  Input,
+  Table,
+  Tooltip,
+  Popconfirm,
+} from 'antd'
 import {
   PlusOutlined,
   SearchOutlined,
   EditOutlined,
-  LockOutlined,
+  QuestionCircleOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons'
 import getConfig from 'next/config'
 import React, { useState, useRef, useEffect } from 'react'
@@ -12,10 +23,6 @@ import axios from 'axios'
 import { useDarkMode } from 'next-dark-mode'
 import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
-import LoadingScreen from '@components/ui/LoadingScreen'
-import { CheckboxChangeEvent } from 'antd/lib/checkbox'
-const { publicRuntimeConfig } = getConfig()
-const format = 'HH:mm'
 
 export default function Menus() {
   const user = authRequired({})
@@ -29,16 +36,19 @@ export default function Menus() {
   }, [])
 
   const [isDrawerVisible, setDrawer] = useState(false)
+  const [editingRecord, setEditingRecord] = useState(null as any)
+  const [isMenuDrawerVisible, setMenuDrawer] = useState(false)
+  const [editingMenuRecord, setEditingMenuRecord] = useState(null as any)
   const [isLoading, setIsLoading] = useState(false)
   const [isMenuLoading, setIsMenuLoading] = useState(false)
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false)
+  const [isMenuSubmittingForm, setIsMenuSubmittingForm] = useState(false)
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
   })
   const [data, setData] = useState([])
   const [menuData, setMenuData] = useState([])
-  const [editingRecord, setEditingRecord] = useState(null as any)
-  const [isSubmittingForm, setIsSubmittingForm] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState([] as number[])
   let webAddress = 'http://localhost:3000'
   if (typeof window !== 'undefined') {
@@ -46,10 +56,8 @@ export default function Menus() {
   }
 
   let searchInput = useRef(null)
-
-  const showDrawer = () => {
-    setDrawer(true)
-  }
+  const [form] = Form.useForm()
+  const [menuForm] = Form.useForm()
 
   const closeDrawer = () => {
     setEditingRecord(null)
@@ -61,6 +69,36 @@ export default function Menus() {
     form.resetFields()
     form.setFieldsValue(record)
     setDrawer(true)
+  }
+
+  const addRecord = () => {
+    setEditingRecord(null)
+    form.resetFields()
+    setDrawer(true)
+  }
+
+  const closeMenuDrawer = () => {
+    setEditingMenuRecord(null)
+    setMenuDrawer(false)
+  }
+
+  const editMenuRecord = (record: any) => {
+    setEditingMenuRecord(record)
+    menuForm.resetFields()
+    menuForm.setFieldsValue(record)
+    setMenuDrawer(true)
+  }
+
+  const deleteMenuItem = async (record: any) => {
+    setIsMenuLoading(true)
+    await axios.delete(`${webAddress}/api/menu_items/${record.id}`)
+    menuItems()
+  }
+
+  const addMenuRecord = () => {
+    setEditingMenuRecord(null)
+    menuForm.resetFields()
+    setMenuDrawer(true)
   }
 
   const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
@@ -83,6 +121,19 @@ export default function Menus() {
     } = await axios.get(`${webAddress}/api/menu_types`)
     setData(result)
     setIsLoading(false)
+  }
+
+  const menuItems = async (selectedId: number = 0) => {
+    setIsMenuLoading(true)
+    const {
+      data: { data: result },
+    } = await axios.get(
+      `${webAddress}/api/menu_items?type_id=${
+        selectedId ? selectedId : selectedRowKeys[0]
+      }`
+    )
+    setMenuData(result)
+    setIsMenuLoading(false)
   }
 
   useEffect(() => {
@@ -132,10 +183,25 @@ export default function Menus() {
                 size="small"
                 icon={<EditOutlined />}
                 onClick={() => {
-                  editRecord(record)
+                  editMenuRecord(record)
                 }}
               />
             </Tooltip>
+            <Popconfirm
+              title="Вы уверены, что хотите удалить?"
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              onConfirm={() => deleteMenuItem(record)}
+              okText="Да"
+              cancelText="Нет"
+            >
+              <Button
+                type="primary"
+                danger
+                shape="circle"
+                size="small"
+                icon={<DeleteOutlined />}
+              />
+            </Popconfirm>
           </div>
         )
       },
@@ -155,8 +221,12 @@ export default function Menus() {
       dataIndex: 'href',
       key: 'href',
     },
+    {
+      title: 'Сортировка',
+      dataIndex: 'sort',
+      key: 'sort',
+    },
   ]
-  const [form] = Form.useForm()
 
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
@@ -179,10 +249,27 @@ export default function Menus() {
     form.submit()
   }
 
-  const addRecord = () => {
-    setEditingRecord(null)
-    form.resetFields()
-    setDrawer(true)
+  const onMenuFinish = async (values: any) => {
+    setIsMenuSubmittingForm(true)
+    if (editingMenuRecord) {
+      await axios.put(`${webAddress}/api/menu_items/${editingMenuRecord?.id}`, {
+        ...editingMenuRecord,
+        ...values,
+        type_id: selectedRowKeys[0],
+      })
+    } else {
+      await axios.post(`${webAddress}/api/menu_items/`, {
+        ...values,
+        type_id: selectedRowKeys[0],
+      })
+    }
+    setIsMenuSubmittingForm(false)
+    closeMenuDrawer()
+    menuItems()
+  }
+
+  const submitMenuForm = () => {
+    menuForm.submit()
   }
 
   const onSearch = async (value: any) => {
@@ -195,11 +282,11 @@ export default function Menus() {
   }
 
   const menuTypeSelectionChange = (selectedRowKeys: any) => {
-    console.log(selectedRowKeys)
+    console.log('davr')
   }
 
   return (
-    <MainLayout title="Пользователи">
+    <MainLayout title="Пункты меню">
       <Drawer
         title={
           editingRecord ? 'Редактировать тип меню' : 'Добавить новый тип меню'
@@ -232,7 +319,7 @@ export default function Menus() {
           form={form}
           hideRequiredMark
           size="small"
-          onFinish={onFinish}
+          onFinish={onMenuFinish}
           initialValues={editingRecord ? editingRecord : undefined}
         >
           <Row gutter={16}>
@@ -243,6 +330,91 @@ export default function Menus() {
                 rules={[{ required: true, message: 'Просьба ввести код' }]}
               >
                 <Input placeholder="Просьба ввести код" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Drawer>
+      <Drawer
+        title={
+          editingMenuRecord
+            ? 'Редактировать пункт меню'
+            : 'Добавить новый пункт меню'
+        }
+        width={720}
+        onClose={closeMenuDrawer}
+        visible={isMenuDrawerVisible}
+        bodyStyle={{ paddingBottom: 80 }}
+        footer={
+          <div
+            style={{
+              textAlign: 'right',
+            }}
+          >
+            <Button onClick={closeMenuDrawer} style={{ marginRight: 8 }}>
+              Отмена
+            </Button>
+            <Button
+              onClick={submitMenuForm}
+              loading={isMenuSubmittingForm}
+              type="primary"
+            >
+              Сохранить
+            </Button>
+          </div>
+        }
+      >
+        <Form
+          layout="vertical"
+          form={menuForm}
+          hideRequiredMark
+          size="small"
+          onFinish={onMenuFinish}
+          initialValues={editingMenuRecord ? editingMenuRecord : undefined}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="name_ru"
+                label="Заголовок(RU)"
+                rules={[
+                  { required: true, message: 'Просьба ввести заголовок' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="name_uz"
+                label="Заголовок(UZ)"
+                rules={[
+                  { required: true, message: 'Просьба ввести заголовок' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="href"
+                label="Ссылка"
+                rules={[{ required: true, message: 'Просьба ввести ссылку' }]}
+              >
+                <Input placeholder="Просьба ввести ссылку" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="sort"
+                label="Сортировка"
+                rules={[
+                  { required: true, message: 'Просьба ввести сортировку' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести сортировку" />
               </Form.Item>
             </Col>
           </Row>
@@ -271,6 +443,7 @@ export default function Menus() {
               return {
                 onClick: (event) => {
                   setSelectedRowKeys([record.id])
+                  menuItems(record.id)
                 },
               }
             }}
@@ -278,7 +451,11 @@ export default function Menus() {
         </Col>
         <Col span={16}>
           <div className="flex justify-between mb-3">
-            <Button type="primary" onClick={addRecord}>
+            <Button
+              type="primary"
+              onClick={addMenuRecord}
+              disabled={!selectedRowKeys.length}
+            >
               <PlusOutlined /> Добавить
             </Button>
           </div>
