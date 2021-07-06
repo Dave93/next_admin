@@ -1,3 +1,4 @@
+console.log(process.env.API_URL);
 module.exports = {
   reactStrictMode: true,
   publicRuntimeConfig: {
