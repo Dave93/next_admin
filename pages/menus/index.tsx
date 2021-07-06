@@ -23,6 +23,9 @@ import axios from 'axios'
 import { useDarkMode } from 'next-dark-mode'
 import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
+import Cookies from 'js-cookie'
+
+axios.defaults.withCredentials = true
 
 export default function Menus() {
   const user = authRequired({})
@@ -136,6 +139,72 @@ export default function Menus() {
     setIsMenuLoading(false)
   }
 
+  const setAxiosCredentials = () => {
+    const csrf = Cookies.get('X-XSRF-TOKEN')
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  }
+
+  const onFinish = async (values: any) => {
+    setIsSubmittingForm(true)
+    setAxiosCredentials()
+    if (editingRecord) {
+      await axios.put(`${webAddress}/api/menu_types/${editingRecord?.id}`, {
+        ...editingRecord,
+        ...values,
+      })
+    } else {
+      await axios.post(`${webAddress}/api/menu_types/`, {
+        ...values,
+      })
+    }
+    setIsSubmittingForm(false)
+    closeDrawer()
+    fetchData()
+  }
+
+  const submitForm = () => {
+    form.submit()
+  }
+
+  const onMenuFinish = async (values: any) => {
+    setIsMenuSubmittingForm(true)
+    setAxiosCredentials()
+    if (editingMenuRecord) {
+      await axios.put(`${webAddress}/api/menu_items/${editingMenuRecord?.id}`, {
+        ...editingMenuRecord,
+        ...values,
+        type_id: selectedRowKeys[0],
+      })
+    } else {
+      await axios.post(`${webAddress}/api/menu_items/`, {
+        ...values,
+        type_id: selectedRowKeys[0],
+      })
+    }
+    setIsMenuSubmittingForm(false)
+    closeMenuDrawer()
+    menuItems()
+  }
+
+  const submitMenuForm = () => {
+    menuForm.submit()
+  }
+
+  const onSearch = async (value: any) => {
+    setIsLoading(true)
+    const {
+      data: { data: result },
+    } = await axios.get(`${webAddress}/api/menu_types?search=${value}`)
+    setData(result)
+    setIsLoading(false)
+  }
+
+  const menuTypeSelectionChange = (selectedRowKeys: any) => {
+    // console.log('davr')
+  }
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -227,63 +296,6 @@ export default function Menus() {
       key: 'sort',
     },
   ]
-
-  const onFinish = async (values: any) => {
-    setIsSubmittingForm(true)
-    if (editingRecord) {
-      await axios.put(`${webAddress}/api/menu_types/${editingRecord?.id}`, {
-        ...editingRecord,
-        ...values,
-      })
-    } else {
-      await axios.post(`${webAddress}/api/menu_types/`, {
-        ...values,
-      })
-    }
-    setIsSubmittingForm(false)
-    closeDrawer()
-    fetchData()
-  }
-
-  const submitForm = () => {
-    form.submit()
-  }
-
-  const onMenuFinish = async (values: any) => {
-    setIsMenuSubmittingForm(true)
-    if (editingMenuRecord) {
-      await axios.put(`${webAddress}/api/menu_items/${editingMenuRecord?.id}`, {
-        ...editingMenuRecord,
-        ...values,
-        type_id: selectedRowKeys[0],
-      })
-    } else {
-      await axios.post(`${webAddress}/api/menu_items/`, {
-        ...values,
-        type_id: selectedRowKeys[0],
-      })
-    }
-    setIsMenuSubmittingForm(false)
-    closeMenuDrawer()
-    menuItems()
-  }
-
-  const submitMenuForm = () => {
-    menuForm.submit()
-  }
-
-  const onSearch = async (value: any) => {
-    setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/menu_types?search=${value}`)
-    setData(result)
-    setIsLoading(false)
-  }
-
-  const menuTypeSelectionChange = (selectedRowKeys: any) => {
-    console.log('davr')
-  }
 
   return (
     <MainLayout title="Пункты меню">
