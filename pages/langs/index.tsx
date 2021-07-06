@@ -21,9 +21,12 @@ import axios from 'axios'
 import { useDarkMode } from 'next-dark-mode'
 import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
-import LoadingScreen from '@components/ui/LoadingScreen'
+import Cookies from 'js-cookie'
+
 const { publicRuntimeConfig } = getConfig()
-const format = 'HH:mm'
+let webAddress = publicRuntimeConfig.apiUrl
+
+axios.defaults.withCredentials = true
 
 export default function Langs() {
   const user = authRequired({})
@@ -34,7 +37,7 @@ export default function Langs() {
     if (!user) {
       return
     }
-  }, [])
+  }, [user])
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -45,10 +48,6 @@ export default function Langs() {
   const [data, setData] = useState([])
   const [editingRecord, setEditingRecord] = useState(null as any)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
-  let webAddress = 'http://localhost:3000'
-  if (typeof window !== 'undefined') {
-    webAddress = window.location.origin
-  }
 
   let searchInput = useRef(null)
 
@@ -90,9 +89,54 @@ export default function Langs() {
     setIsLoading(false)
   }
 
+  const setAxiosCredentials = () => {
+    const csrf = Cookies.get('X-XSRF-TOKEN')
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  }
+  const [form] = Form.useForm()
+
+  const onFinish = async (values: any) => {
+    setIsSubmittingForm(true)
+    setAxiosCredentials()
+    if (editingRecord) {
+      await axios.put(`${webAddress}/api/langs/${editingRecord?.id}`, {
+        ...editingRecord,
+        ...values,
+      })
+    } else {
+      await axios.post(`${webAddress}/api/langs/`, {
+        ...values,
+      })
+    }
+    setIsSubmittingForm(false)
+    closeDrawer()
+    fetchData()
+  }
+
+  const submitForm = () => {
+    form.submit()
+  }
+
+  const addRecord = () => {
+    setEditingRecord(null)
+    form.resetFields()
+    setDrawer(true)
+  }
+
+  const onSearch = async (value: any) => {
+    setIsLoading(true)
+    const {
+      data: { data: result },
+    } = await axios.get(`${webAddress}/api/langs?search=${value}`)
+    setData(result)
+    setIsLoading(false)
+  }
+
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   // const Tooltip =
 
@@ -132,43 +176,6 @@ export default function Langs() {
       key: 'name_uz',
     },
   ]
-  const [form] = Form.useForm()
-
-  const onFinish = async (values: any) => {
-    setIsSubmittingForm(true)
-    if (editingRecord) {
-      await axios.put(`${webAddress}/api/langs/${editingRecord?.id}`, {
-        ...editingRecord,
-        ...values,
-      })
-    } else {
-      await axios.post(`${webAddress}/api/langs/`, {
-        ...values,
-      })
-    }
-    setIsSubmittingForm(false)
-    closeDrawer()
-    fetchData()
-  }
-
-  const submitForm = () => {
-    form.submit()
-  }
-
-  const addRecord = () => {
-    setEditingRecord(null)
-    form.resetFields()
-    setDrawer(true)
-  }
-
-  const onSearch = async (value: any) => {
-    setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/langs?search=${value}`)
-    setData(result)
-    setIsLoading(false)
-  }
 
   return (
     <MainLayout title="Настройки">
