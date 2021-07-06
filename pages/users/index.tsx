@@ -30,8 +30,12 @@ import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
 import LoadingScreen from '@components/ui/LoadingScreen'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
+import Cookies from 'js-cookie'
+
 const { publicRuntimeConfig } = getConfig()
-const format = 'HH:mm'
+let webAddress = publicRuntimeConfig.apiUrl
+
+axios.defaults.withCredentials = true
 
 export default function Users() {
   const user = authRequired({})
@@ -42,7 +46,7 @@ export default function Users() {
     if (!user) {
       return
     }
-  }, [])
+  }, [user])
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -54,10 +58,6 @@ export default function Users() {
   const [data, setData] = useState([])
   const [editingRecord, setEditingRecord] = useState(null as any)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
-  let webAddress = 'http://localhost:3000'
-  if (typeof window !== 'undefined') {
-    webAddress = window.location.origin
-  }
 
   let searchInput = useRef(null)
 
@@ -95,8 +95,7 @@ export default function Users() {
     userId: number,
     e: CheckboxChangeEvent
   ) => {
-    console.log(role)
-    console.log(e)
+    setAxiosCredentials()
     setIsLoading(true)
     await axios.post(`${webAddress}/api/roles/set_to_user`, {
       role,
@@ -123,10 +122,17 @@ export default function Users() {
     setRoles(result)
   }
 
+  const setAxiosCredentials = () => {
+    const csrf = Cookies.get('X-XSRF-TOKEN')
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  }
+
   useEffect(() => {
     fetchData()
     fetchRoles()
-  }, [])
+  }, [fetchData, fetchRoles])
 
   // const Tooltip =
 

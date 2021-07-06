@@ -25,6 +25,9 @@ import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
 import Cookies from 'js-cookie'
 
+const { publicRuntimeConfig } = getConfig()
+let webAddress = publicRuntimeConfig.apiUrl
+
 axios.defaults.withCredentials = true
 
 export default function Menus() {
@@ -36,7 +39,7 @@ export default function Menus() {
     if (!user) {
       return
     }
-  }, [])
+  }, [user])
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [editingRecord, setEditingRecord] = useState(null as any)
@@ -53,10 +56,6 @@ export default function Menus() {
   const [data, setData] = useState([])
   const [menuData, setMenuData] = useState([])
   const [selectedRowKeys, setSelectedRowKeys] = useState([] as number[])
-  let webAddress = 'http://localhost:3000'
-  if (typeof window !== 'undefined') {
-    webAddress = window.location.origin
-  }
 
   let searchInput = useRef(null)
   const [form] = Form.useForm()
@@ -207,7 +206,7 @@ export default function Menus() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   const columns = [
     {

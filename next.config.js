@@ -5,10 +5,10 @@ module.exports = {
   },
   async rewrites() {
     return [
-      {
-        source: '/api/login',
-        destination: `${process.env.API_URL}/login`,
-      },
+      // {
+      //   source: '/api/login',
+      //   destination: `${process.env.API_URL}/login`,
+      // },
       {
         source: '/api/logout',
         destination: `${process.env.API_URL}/logout`,
