@@ -39,7 +39,7 @@ export default function Menus() {
     if (!user) {
       return
     }
-  }, [user])
+  }, [])
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [editingRecord, setEditingRecord] = useState(null as any)
@@ -206,7 +206,7 @@ export default function Menus() {
 
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+  }, [])
 
   const columns = [
     {

@@ -40,7 +40,7 @@ const Terminals = () => {
     if (!user) {
       return
     }
-  }, [user])
+  }, [])
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -139,7 +139,7 @@ const Terminals = () => {
 
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+  }, [])
 
   const columns = [
     {

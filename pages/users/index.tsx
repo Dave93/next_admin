@@ -46,7 +46,7 @@ export default function Users() {
     if (!user) {
       return
     }
-  }, [user])
+  }, [])
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -132,7 +132,7 @@ export default function Users() {
   useEffect(() => {
     fetchData()
     fetchRoles()
-  }, [fetchData, fetchRoles])
+  }, [])
 
   // const Tooltip =
 
