@@ -99,11 +99,9 @@ export default function MainLayout({
             <Menu.Item key="/menus" icon={<MenuOutlined />}>
               <Link href="/menus">Пункты меню</Link>
             </Menu.Item>
-            <SubMenu key="sub1" icon={<AppstoreOutlined />} title="Каталог">
-              <Menu.Item key="/categories">
-                <Link href="/categories">Категории</Link>
-              </Menu.Item>
-            </SubMenu>
+            <Menu.Item key="/catalog" icon={<MenuOutlined />}>
+              <Link href="/catalog">Каталог</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
         <Layout>
