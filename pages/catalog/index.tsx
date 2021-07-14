@@ -47,7 +47,7 @@ export default function Menus() {
   }, [])
 
   const [isDrawerVisible, setDrawer] = useState(false)
-  const [editingRecord, setEditingRecord] = useState(null as any)
+  const [editingCategory, setEditingCategory] = useState(null as any)
   const [isMenuDrawerVisible, setMenuDrawer] = useState(false)
   const [editingMenuRecord, setEditingMenuRecord] = useState(null as any)
   const [isLoading, setIsLoading] = useState(false)
@@ -57,6 +57,7 @@ export default function Menus() {
   const [data, setData] = useState([])
   const [menuData, setMenuData] = useState([])
   const [selectedRowKeys, setSelectedRowKeys] = useState([] as number[])
+  const [selectedCategory, setSelectedCategory] = useState(null as any)
   const [channelName, setChannelName] = useState('')
 
   let searchInput = useRef(null)
@@ -64,19 +65,20 @@ export default function Menus() {
   const [menuForm] = Form.useForm()
 
   const closeDrawer = () => {
-    setEditingRecord(null)
+    setEditingCategory(null)
     setDrawer(false)
   }
 
-  const editRecord = (record: any) => {
-    setEditingRecord(record)
+  const editCategory = () => {
+    setEditingCategory(selectedCategory)
+    let name = selectedCategory.attribute_data.name[channelName]
     form.resetFields()
-    form.setFieldsValue(record)
+    form.setFieldsValue({ name_ru: name.ru, name_uz: name.uz })
     setDrawer(true)
   }
 
   const addRecord = () => {
-    setEditingRecord(null)
+    setEditingCategory(null)
     form.resetFields()
     setDrawer(true)
   }
@@ -149,16 +151,11 @@ export default function Menus() {
     axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
   }
 
-  const onFinish = async (values: any) => {
+  const onCategoryFinish = async (values: any) => {
     setIsSubmittingForm(true)
     setAxiosCredentials()
-    if (editingRecord) {
-      await axios.put(`${webAddress}/api/menu_types/${editingRecord?.id}`, {
-        ...editingRecord,
-        ...values,
-      })
-    } else {
-      await axios.post(`${webAddress}/api/menu_types/`, {
+    if (editingCategory) {
+      await axios.put(`${webAddress}/api/categories/${editingCategory?.id}`, {
         ...values,
       })
     }
@@ -213,40 +210,12 @@ export default function Menus() {
   ) => {
     console.log('selected', info.selectedNodes)
     console.log('selectedNode', info.node)
+    setSelectedCategory(info.node)
   }
 
   useEffect(() => {
     fetchData()
   }, [])
-
-  const columns = [
-    {
-      title: 'Действие',
-      dataIndex: 'action',
-      render: (_: any, record: any) => {
-        return (
-          <div className="space-x-2">
-            <Tooltip title="Редактировать">
-              <Button
-                type="primary"
-                shape="circle"
-                size="small"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  editRecord(record)
-                }}
-              />
-            </Tooltip>
-          </div>
-        )
-      },
-    },
-    {
-      title: 'Код',
-      dataIndex: 'code',
-      key: 'code',
-    },
-  ]
 
   const menuColumns = [
     {
@@ -308,10 +277,12 @@ export default function Menus() {
   ]
 
   return (
-    <MainLayout title="Пункты меню">
+    <MainLayout title="Каталог">
       <Drawer
         title={
-          editingRecord ? 'Редактировать тип меню' : 'Добавить новый тип меню'
+          editingCategory
+            ? 'Редактировать категорию'
+            : 'Добавить новую категорию'
         }
         width={720}
         onClose={closeDrawer}
@@ -341,17 +312,24 @@ export default function Menus() {
           form={form}
           hideRequiredMark
           size="small"
-          onFinish={onMenuFinish}
-          initialValues={editingRecord ? editingRecord : undefined}
+          onFinish={onCategoryFinish}
+          initialValues={editingCategory ? editingCategory : undefined}
         >
           <Row gutter={16}>
             <Col span={12}>
+              <Form.Item label="Код">
+                <span>
+                  {selectedCategory?.attribute_data?.name[channelName].ru}
+                </span>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
               <Form.Item
-                name="code"
-                label="Код"
-                rules={[{ required: true, message: 'Просьба ввести код' }]}
+                name="name_uz"
+                label="Название(узб)"
+                rules={[{ required: true, message: 'Просьба ввести название' }]}
               >
-                <Input placeholder="Просьба ввести код" />
+                <Input placeholder="Просьба ввести название" />
               </Form.Item>
             </Col>
           </Row>
@@ -445,8 +423,12 @@ export default function Menus() {
       <Row gutter={16}>
         <Col span={8}>
           <div className="flex justify-between mb-3">
-            <Button type="primary" onClick={addRecord}>
-              <PlusOutlined /> Добавить
+            <Button
+              type="primary"
+              onClick={editCategory}
+              disabled={!selectedCategory}
+            >
+              <EditOutlined /> Редактировать
             </Button>
           </div>
           <Tree
