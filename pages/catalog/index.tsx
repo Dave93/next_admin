@@ -16,11 +16,11 @@ import {
   SearchOutlined,
   EditOutlined,
   QuestionCircleOutlined,
-  DeleteOutlined,
+  MergeCellsOutlined,
   DownOutlined,
 } from '@ant-design/icons'
 import getConfig from 'next/config'
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import axios from 'axios'
 import { useDarkMode } from 'next-dark-mode'
 import MainLayout from '@components/ui/MainLayout'
@@ -54,20 +54,19 @@ export default function Menus() {
   const [isMenuLoading, setIsMenuLoading] = useState(false)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
   const [isMenuSubmittingForm, setIsMenuSubmittingForm] = useState(false)
+  const [isMergeSubmittingForm, setIsMergeSubmittingForm] = useState(false)
   const [data, setData] = useState([])
-  const [menuData, setMenuData] = useState([])
+  const [products, setProducts] = useState([])
   const [selectedRowKeys, setSelectedRowKeys] = useState([] as number[])
   const [selectedCategory, setSelectedCategory] = useState(null as any)
   const [channelName, setChannelName] = useState('')
+  const [selectedProducts, setSelectedProducts] = useState([] as any[])
+  const [isMergeDrawerVisible, setMergeDrawerVisible] = useState(false)
+  const [productSearchText, setProductSearchText] = useState('')
 
-  let searchInput = useRef(null)
   const [form] = Form.useForm()
   const [menuForm] = Form.useForm()
-
-  const closeDrawer = () => {
-    setEditingCategory(null)
-    setDrawer(false)
-  }
+  const [mergeForm] = Form.useForm()
 
   const editCategory = () => {
     setEditingCategory(selectedCategory)
@@ -81,11 +80,6 @@ export default function Menus() {
     setEditingCategory(null)
     form.resetFields()
     setDrawer(true)
-  }
-
-  const closeMenuDrawer = () => {
-    setEditingMenuRecord(null)
-    setMenuDrawer(false)
   }
 
   const editMenuRecord = (record: any) => {
@@ -105,6 +99,24 @@ export default function Menus() {
     setEditingMenuRecord(null)
     menuForm.resetFields()
     setMenuDrawer(true)
+  }
+
+  const closeDrawer = () => {
+    setEditingCategory(null)
+    setDrawer(false)
+  }
+
+  const closeMenuDrawer = () => {
+    setEditingMenuRecord(null)
+    setMenuDrawer(false)
+  }
+
+  const closeMergeDrawer = () => {
+    setMergeDrawerVisible(false)
+  }
+
+  const startMergeProducts = () => {
+    setMergeDrawerVisible(true)
   }
 
   const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
@@ -136,32 +148,31 @@ export default function Menus() {
     const {
       data: { data: result },
     } = await axios.get(
-      `${webAddress}/api/products?parentId=${
+      `${webAddress}/api/products?categoryId=${
         selectedId ? selectedId : selectedRowKeys[0]
-      }`
+      }&product_id=0`
     )
-    setMenuData(result)
+    setProducts(result)
     setIsMenuLoading(false)
   }
-
-  // const menuItems = async (selectedId: number = 0) => {
-  //   setIsMenuLoading(true)
-  //   const {
-  //     data: { data: result },
-  //   } = await axios.get(
-  //     `${webAddress}/api/menu_items?type_id=${
-  //       selectedId ? selectedId : selectedRowKeys[0]
-  //     }`
-  //   )
-  //   setMenuData(result)
-  //   setIsMenuLoading(false)
-  // }
 
   const setAxiosCredentials = () => {
     const csrf = Cookies.get('X-XSRF-TOKEN')
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
     axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  }
+
+  const submitMenuForm = () => {
+    menuForm.submit()
+  }
+
+  const submitMergeForm = () => {
+    mergeForm.submit()
+  }
+
+  const submitForm = () => {
+    form.submit()
   }
 
   const onCategoryFinish = async (values: any) => {
@@ -175,10 +186,6 @@ export default function Menus() {
     setIsSubmittingForm(false)
     closeDrawer()
     fetchData()
-  }
-
-  const submitForm = () => {
-    form.submit()
   }
 
   const onMenuFinish = async (values: any) => {
@@ -201,17 +208,23 @@ export default function Menus() {
     // menuItems()
   }
 
-  const submitMenuForm = () => {
-    menuForm.submit()
+  const onProductsFinish = async (values: any) => {
+    setIsMergeSubmittingForm(true)
+    setAxiosCredentials()
+
+    await axios.post(`${webAddress}/api/products/merge`, {
+      ...values,
+      productIds: selectedProducts.map((prod) => prod.id),
+      categoryId: selectedCategory.id,
+    })
+
+    setIsMergeSubmittingForm(false)
+    closeMergeDrawer()
+    fetchProducts(selectedCategory.id)
   }
 
   const onSearch = async (value: any) => {
-    setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/menu_types?search=${value}`)
-    setData(result)
-    setIsLoading(false)
+    setProductSearchText(value)
   }
 
   const onSelect = async (
@@ -221,8 +234,7 @@ export default function Menus() {
       selectedNodes: DataNode[]
     }
   ) => {
-    console.log('selected', info.selectedNodes)
-    console.log('selectedNode', info.node)
+    setSelectedProducts([])
     setSelectedCategory(info.node)
     fetchProducts(info?.node?.id)
   }
@@ -230,6 +242,40 @@ export default function Menus() {
   useEffect(() => {
     fetchData()
   }, [])
+
+  const selectedProductsCount = useMemo(() => {
+    let count = 0
+    count = selectedProducts.filter((prod) => prod.price > 0).length
+    return count
+  }, [selectedProducts])
+
+  const activeProductEdit = useMemo(() => {
+    let active = false
+    const prodLength = selectedProducts.filter(
+      (prod) => prod.price <= 0 && !prod.product_id
+    ).length
+    active = prodLength == 1 && prodLength == selectedProducts.length
+    return active
+  }, [selectedProducts])
+
+  const filteredProduct = useMemo(() => {
+    let result = products
+
+    if (productSearchText.length > 0) {
+      result = result.filter((prod: any) => {
+        return (
+          prod?.attribute_data?.name[channelName]?.ru
+            .toLowerCase()
+            .indexOf(productSearchText.toLowerCase()) >= 0 ||
+          prod?.attribute_data?.name[channelName]?.uz
+            .toLowerCase()
+            .indexOf(productSearchText.toLowerCase()) >= 0
+        )
+      })
+    }
+
+    return result
+  }, [products, productSearchText])
 
   const productsColumns = [
     {
@@ -261,11 +307,6 @@ export default function Menus() {
         )
       },
     },
-    {
-      title: 'Название варианта',
-      dataIndex: 'custom_name',
-      key: 'custom_name',
-    },
   ]
 
   const expandedRowRender = (record: any) => {
@@ -274,13 +315,13 @@ export default function Menus() {
       {
         title: 'Цена',
         key: 'price',
-        render: () => (
+        render: (_: any, rec: any) => (
           <span>
             {new Intl.NumberFormat('uz', {
               style: 'currency',
               currency: 'UZS',
               maximumFractionDigits: 0,
-            }).format(record?.price)}
+            }).format(rec?.price)}
           </span>
         ),
       },
@@ -290,7 +331,7 @@ export default function Menus() {
         columns={columns}
         dataSource={record?.modifiers}
         pagination={false}
-        title={() => <div className="font-bold">Модификаторы</div>}
+        title={() => <div className="font-bold text-xl">Модификаторы</div>}
         bordered={true}
       />
     )
@@ -440,8 +481,67 @@ export default function Menus() {
           </Row>
         </Form>
       </Drawer>
+      <Drawer
+        title={'Объединить товары'}
+        width={720}
+        onClose={closeMergeDrawer}
+        visible={isMergeDrawerVisible}
+        bodyStyle={{ paddingBottom: 80 }}
+        footer={
+          <div
+            style={{
+              textAlign: 'right',
+            }}
+          >
+            <Button onClick={closeMergeDrawer} style={{ marginRight: 8 }}>
+              Отмена
+            </Button>
+            <Button
+              onClick={submitMergeForm}
+              loading={isMergeSubmittingForm}
+              type="primary"
+            >
+              Объединить
+            </Button>
+          </div>
+        }
+      >
+        <Form
+          layout="vertical"
+          form={mergeForm}
+          hideRequiredMark
+          size="small"
+          onFinish={onProductsFinish}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="name_ru"
+                label="Заголовок(RU)"
+                rules={[
+                  { required: true, message: 'Просьба ввести заголовок' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="name_uz"
+                label="Заголовок(UZ)"
+                rules={[
+                  { required: true, message: 'Просьба ввести заголовок' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Drawer>
       <Row gutter={16}>
         <Col span={4}>
+          <div className="font-bold text-xl mb-3">Категории</div>
           <div className="flex justify-between mb-3">
             <Button
               type="primary"
@@ -463,25 +563,53 @@ export default function Menus() {
             )}
           />
         </Col>
-        <Col span={20}>
-          <div className="flex justify-between mb-3">
+        <Col span={12}>
+          <div className="font-bold text-xl mb-3">Продукты</div>
+          <div className="flex space-x-2 mb-3">
             <Button
               type="primary"
-              onClick={addMenuRecord}
-              disabled={!selectedRowKeys.length}
+              onClick={startMergeProducts}
+              disabled={
+                selectedProductsCount < 2 ||
+                selectedProductsCount != selectedProducts.length
+              }
             >
-              <PlusOutlined /> Добавить
+              <MergeCellsOutlined /> Объединить {selectedProductsCount}
             </Button>
+            <Button
+              type="primary"
+              onClick={editCategory}
+              disabled={!activeProductEdit}
+            >
+              <EditOutlined /> Редактировать
+            </Button>
+            <Input.Search
+              placeholder="Search..."
+              allowClear
+              onSearch={onSearch}
+            />
           </div>
           <Table
             columns={productsColumns}
-            dataSource={menuData}
+            dataSource={filteredProduct}
             loading={isMenuLoading}
             expandable={{ expandedRowRender }}
             rowKey="id"
             size="small"
             bordered
+            rowSelection={{
+              type: 'checkbox',
+              onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+                setSelectedProducts(selectedRows)
+              },
+              // getCheckboxProps: (record: any) => ({
+              //   disabled: parseInt(record.price, 0) <= 0,
+              // }),
+            }}
           />
+        </Col>
+        <Col span={8}>
+          <div className="font-bold text-xl mb-3">Варианты</div>
         </Col>
       </Row>
     </MainLayout>
