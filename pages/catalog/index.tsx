@@ -98,7 +98,7 @@ export default function Menus() {
   const deleteMenuItem = async (record: any) => {
     setIsMenuLoading(true)
     await axios.delete(`${webAddress}/api/menu_items/${record.id}`)
-    menuItems()
+    // menuItems()
   }
 
   const addMenuRecord = () => {
@@ -131,18 +131,31 @@ export default function Menus() {
     setIsLoading(false)
   }
 
-  const menuItems = async (selectedId: number = 0) => {
+  const fetchProducts = async (selectedId: number = 0) => {
     setIsMenuLoading(true)
     const {
       data: { data: result },
     } = await axios.get(
-      `${webAddress}/api/menu_items?type_id=${
+      `${webAddress}/api/products?parentId=${
         selectedId ? selectedId : selectedRowKeys[0]
       }`
     )
     setMenuData(result)
     setIsMenuLoading(false)
   }
+
+  // const menuItems = async (selectedId: number = 0) => {
+  //   setIsMenuLoading(true)
+  //   const {
+  //     data: { data: result },
+  //   } = await axios.get(
+  //     `${webAddress}/api/menu_items?type_id=${
+  //       selectedId ? selectedId : selectedRowKeys[0]
+  //     }`
+  //   )
+  //   setMenuData(result)
+  //   setIsMenuLoading(false)
+  // }
 
   const setAxiosCredentials = () => {
     const csrf = Cookies.get('X-XSRF-TOKEN')
@@ -185,7 +198,7 @@ export default function Menus() {
     }
     setIsMenuSubmittingForm(false)
     closeMenuDrawer()
-    menuItems()
+    // menuItems()
   }
 
   const submitMenuForm = () => {
@@ -204,77 +217,84 @@ export default function Menus() {
   const onSelect = async (
     selectedKeys: Key[],
     info: {
-      node: EventDataNode
+      node: any
       selectedNodes: DataNode[]
     }
   ) => {
     console.log('selected', info.selectedNodes)
     console.log('selectedNode', info.node)
     setSelectedCategory(info.node)
+    fetchProducts(info?.node?.id)
   }
 
   useEffect(() => {
     fetchData()
   }, [])
 
-  const menuColumns = [
+  const productsColumns = [
     {
-      title: 'Действие',
-      dataIndex: 'action',
+      title: 'Название(RU)',
+      dataIndex: 'name_ru',
+      render: (_: any, record: any) => {
+        return <div>{record?.attribute_data?.name[channelName]?.ru}</div>
+      },
+    },
+    {
+      title: 'Название(UZ)',
+      dataIndex: 'name_uz',
+      render: (_: any, record: any) => {
+        return <div>{record?.attribute_data?.name[channelName]?.uz}</div>
+      },
+    },
+    {
+      title: 'Цена',
+      dataIndex: 'price',
       render: (_: any, record: any) => {
         return (
-          <div className="space-x-2">
-            <Tooltip title="Редактировать">
-              <Button
-                type="primary"
-                shape="circle"
-                size="small"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  editMenuRecord(record)
-                }}
-              />
-            </Tooltip>
-            <Popconfirm
-              title="Вы уверены, что хотите удалить?"
-              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-              onConfirm={() => deleteMenuItem(record)}
-              okText="Да"
-              cancelText="Нет"
-            >
-              <Button
-                type="primary"
-                danger
-                shape="circle"
-                size="small"
-                icon={<DeleteOutlined />}
-              />
-            </Popconfirm>
+          <div>
+            {new Intl.NumberFormat('uz', {
+              style: 'currency',
+              currency: 'UZS',
+              maximumFractionDigits: 0,
+            }).format(record?.price)}
           </div>
         )
       },
     },
     {
-      title: 'Название(RU)',
-      dataIndex: 'name_ru',
-      key: 'name_ru',
-    },
-    {
-      title: 'Название(UZ)',
-      dataIndex: 'name_uz',
-      key: 'name_uz',
-    },
-    {
-      title: 'Ссылка',
-      dataIndex: 'href',
-      key: 'href',
-    },
-    {
-      title: 'Сортировка',
-      dataIndex: 'sort',
-      key: 'sort',
+      title: 'Название варианта',
+      dataIndex: 'custom_name',
+      key: 'custom_name',
     },
   ]
+
+  const expandedRowRender = (record: any) => {
+    const columns = [
+      { title: 'Название', dataIndex: 'name', key: 'name' },
+      {
+        title: 'Цена',
+        key: 'price',
+        render: () => (
+          <span>
+            {new Intl.NumberFormat('uz', {
+              style: 'currency',
+              currency: 'UZS',
+              maximumFractionDigits: 0,
+            }).format(record?.price)}
+          </span>
+        ),
+      },
+    ]
+    return (
+      <Table
+        columns={columns}
+        dataSource={record?.modifiers}
+        pagination={false}
+        title={() => <div className="font-bold">Модификаторы</div>}
+        bordered={true}
+      />
+    )
+  }
 
   return (
     <MainLayout title="Каталог">
@@ -421,7 +441,7 @@ export default function Menus() {
         </Form>
       </Drawer>
       <Row gutter={16}>
-        <Col span={8}>
+        <Col span={4}>
           <div className="flex justify-between mb-3">
             <Button
               type="primary"
@@ -443,7 +463,7 @@ export default function Menus() {
             )}
           />
         </Col>
-        <Col span={16}>
+        <Col span={20}>
           <div className="flex justify-between mb-3">
             <Button
               type="primary"
@@ -454,9 +474,10 @@ export default function Menus() {
             </Button>
           </div>
           <Table
-            columns={menuColumns}
+            columns={productsColumns}
             dataSource={menuData}
             loading={isMenuLoading}
+            expandable={{ expandedRowRender }}
             rowKey="id"
             size="small"
             bordered
