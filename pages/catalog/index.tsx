@@ -46,27 +46,43 @@ export default function Menus() {
     }
   }, [])
 
+  // Drawers
   const [isDrawerVisible, setDrawer] = useState(false)
+  const [isVariantDrawerVisible, setVariantDrawer] = useState(false)
+  const [isMergeDrawerVisible, setMergeDrawerVisible] = useState(false)
+
+  // Editing
   const [editingCategory, setEditingCategory] = useState(null as any)
-  const [isMenuDrawerVisible, setMenuDrawer] = useState(false)
   const [editingMenuRecord, setEditingMenuRecord] = useState(null as any)
-  const [isLoading, setIsLoading] = useState(false)
+  const [editingVariant, setEditingVariant] = useState(null as any)
+
+  // Table loaders
   const [isMenuLoading, setIsMenuLoading] = useState(false)
+  const [isVariantsLoading, setIsVariantsLoading] = useState(false)
+
+  // Form submit loaders
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
-  const [isMenuSubmittingForm, setIsMenuSubmittingForm] = useState(false)
+  const [isVariantSubmittingForm, setIsVariantSubmittingForm] = useState(false)
   const [isMergeSubmittingForm, setIsMergeSubmittingForm] = useState(false)
+
+  // Table datas
   const [data, setData] = useState([])
   const [products, setProducts] = useState([])
-  const [selectedRowKeys, setSelectedRowKeys] = useState([] as number[])
+  const [variants, setVariants] = useState([])
+
+  // Selections
   const [selectedCategory, setSelectedCategory] = useState(null as any)
-  const [channelName, setChannelName] = useState('')
   const [selectedProducts, setSelectedProducts] = useState([] as any[])
-  const [isMergeDrawerVisible, setMergeDrawerVisible] = useState(false)
+  const [selectedVariant, setSelectedVariant] = useState(null as any)
+
+  // Search and Channel
+  const [channelName, setChannelName] = useState('')
   const [productSearchText, setProductSearchText] = useState('')
 
+  // Forms
   const [form] = Form.useForm()
-  const [menuForm] = Form.useForm()
   const [mergeForm] = Form.useForm()
+  const [variantForm] = Form.useForm()
 
   const editCategory = () => {
     setEditingCategory(selectedCategory)
@@ -76,17 +92,22 @@ export default function Menus() {
     setDrawer(true)
   }
 
+  const editVariant = () => {
+    setEditingVariant(selectedVariant)
+    let name = selectedVariant.attribute_data.name[channelName]
+    variantForm.resetFields()
+    variantForm.setFieldsValue({
+      name_ru: name.ru,
+      name_uz: name.uz,
+      custom_name: selectedVariant.custom_name,
+    })
+    setVariantDrawer(true)
+  }
+
   const addRecord = () => {
     setEditingCategory(null)
     form.resetFields()
     setDrawer(true)
-  }
-
-  const editMenuRecord = (record: any) => {
-    setEditingMenuRecord(record)
-    menuForm.resetFields()
-    menuForm.setFieldsValue(record)
-    setMenuDrawer(true)
   }
 
   const deleteMenuItem = async (record: any) => {
@@ -95,24 +116,17 @@ export default function Menus() {
     // menuItems()
   }
 
-  const addMenuRecord = () => {
-    setEditingMenuRecord(null)
-    menuForm.resetFields()
-    setMenuDrawer(true)
-  }
-
   const closeDrawer = () => {
     setEditingCategory(null)
     setDrawer(false)
   }
 
-  const closeMenuDrawer = () => {
-    setEditingMenuRecord(null)
-    setMenuDrawer(false)
-  }
-
   const closeMergeDrawer = () => {
     setMergeDrawerVisible(false)
+  }
+
+  const closeVariantDrawer = () => {
+    setVariantDrawer(false)
   }
 
   const startMergeProducts = () => {
@@ -133,14 +147,12 @@ export default function Menus() {
   }
 
   const fetchData = async () => {
-    setIsLoading(true)
     const channelData = await defaultChannel()
     const {
       data: { data: result },
     } = await axios.get(`${webAddress}/api/categories?mode=tree`)
     setChannelName(channelData.name)
     setData(result)
-    setIsLoading(false)
   }
 
   const fetchProducts = async (selectedId: number = 0) => {
@@ -148,12 +160,21 @@ export default function Menus() {
     const {
       data: { data: result },
     } = await axios.get(
-      `${webAddress}/api/products?categoryId=${
-        selectedId ? selectedId : selectedRowKeys[0]
-      }&product_id=0`
+      `${webAddress}/api/products?categoryId=${selectedId}&product_id=0`
     )
     setProducts(result)
     setIsMenuLoading(false)
+  }
+
+  const fetchVariants = async (selectedId: number = 0) => {
+    setIsVariantsLoading(true)
+    const {
+      data: { data: result },
+    } = await axios.get(
+      `${webAddress}/api/products/variants?product_id=${selectedId}`
+    )
+    setVariants(result)
+    setIsVariantsLoading(false)
   }
 
   const setAxiosCredentials = () => {
@@ -163,8 +184,8 @@ export default function Menus() {
     axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
   }
 
-  const submitMenuForm = () => {
-    menuForm.submit()
+  const submitVariantForm = () => {
+    variantForm.submit()
   }
 
   const submitMergeForm = () => {
@@ -188,26 +209,6 @@ export default function Menus() {
     fetchData()
   }
 
-  const onMenuFinish = async (values: any) => {
-    setIsMenuSubmittingForm(true)
-    setAxiosCredentials()
-    if (editingMenuRecord) {
-      await axios.put(`${webAddress}/api/menu_items/${editingMenuRecord?.id}`, {
-        ...editingMenuRecord,
-        ...values,
-        type_id: selectedRowKeys[0],
-      })
-    } else {
-      await axios.post(`${webAddress}/api/menu_items/`, {
-        ...values,
-        type_id: selectedRowKeys[0],
-      })
-    }
-    setIsMenuSubmittingForm(false)
-    closeMenuDrawer()
-    // menuItems()
-  }
-
   const onProductsFinish = async (values: any) => {
     setIsMergeSubmittingForm(true)
     setAxiosCredentials()
@@ -221,6 +222,24 @@ export default function Menus() {
     setIsMergeSubmittingForm(false)
     closeMergeDrawer()
     fetchProducts(selectedCategory.id)
+  }
+
+  const onVariantFinish = async (values: any) => {
+    setIsVariantSubmittingForm(true)
+    setAxiosCredentials()
+
+    await axios.put(`${webAddress}/api/products/${selectedVariant.id}`, {
+      ...values,
+    })
+
+    setIsVariantSubmittingForm(false)
+    closeVariantDrawer()
+    let editableCount = selectedProducts.filter(
+      (prod) => !prod.product_id && prod.price <= 0
+    )
+    if (editableCount.length === 1) {
+      fetchVariants(editableCount[0].id)
+    }
   }
 
   const onSearch = async (value: any) => {
@@ -331,6 +350,8 @@ export default function Menus() {
         columns={columns}
         dataSource={record?.modifiers}
         pagination={false}
+        rowKey="id"
+        size="small"
         title={() => <div className="font-bold text-xl">Модификаторы</div>}
         bordered={true}
       />
@@ -371,7 +392,6 @@ export default function Menus() {
         <Form
           layout="vertical"
           form={form}
-          hideRequiredMark
           size="small"
           onFinish={onCategoryFinish}
           initialValues={editingCategory ? editingCategory : undefined}
@@ -396,15 +416,14 @@ export default function Menus() {
           </Row>
         </Form>
       </Drawer>
+
       <Drawer
         title={
-          editingMenuRecord
-            ? 'Редактировать пункт меню'
-            : 'Добавить новый пункт меню'
+          editingVariant ? 'Редактировать вариант' : 'Добавить новую категорию'
         }
         width={720}
-        onClose={closeMenuDrawer}
-        visible={isMenuDrawerVisible}
+        onClose={closeVariantDrawer}
+        visible={isVariantDrawerVisible}
         bodyStyle={{ paddingBottom: 80 }}
         footer={
           <div
@@ -412,12 +431,12 @@ export default function Menus() {
               textAlign: 'right',
             }}
           >
-            <Button onClick={closeMenuDrawer} style={{ marginRight: 8 }}>
+            <Button onClick={closeVariantDrawer} style={{ marginRight: 8 }}>
               Отмена
             </Button>
             <Button
-              onClick={submitMenuForm}
-              loading={isMenuSubmittingForm}
+              onClick={submitVariantForm}
+              loading={isVariantSubmittingForm}
               type="primary"
             >
               Сохранить
@@ -427,55 +446,41 @@ export default function Menus() {
       >
         <Form
           layout="vertical"
-          form={menuForm}
-          hideRequiredMark
+          form={variantForm}
           size="small"
-          onFinish={onMenuFinish}
-          initialValues={editingMenuRecord ? editingMenuRecord : undefined}
+          onFinish={onVariantFinish}
+          initialValues={editingVariant ? editingVariant : undefined}
         >
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="name_ru"
-                label="Заголовок(RU)"
-                rules={[
-                  { required: true, message: 'Просьба ввести заголовок' },
-                ]}
+                label="Название товара(рус)"
+                rules={[{ required: true, message: 'Просьба ввести название' }]}
               >
-                <Input placeholder="Просьба ввести заголовок" />
+                <Input placeholder="Просьба ввести название" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="name_uz"
-                label="Заголовок(UZ)"
-                rules={[
-                  { required: true, message: 'Просьба ввести заголовок' },
-                ]}
+                label="Название товара(узб)"
+                rules={[{ required: true, message: 'Просьба ввести название' }]}
               >
-                <Input placeholder="Просьба ввести заголовок" />
+                <Input placeholder="Просьба ввести название" />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="href"
-                label="Ссылка"
-                rules={[{ required: true, message: 'Просьба ввести ссылку' }]}
-              >
-                <Input placeholder="Просьба ввести ссылку" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="sort"
-                label="Сортировка"
+                name="custom_name"
+                label="Заголовок варианта"
                 rules={[
-                  { required: true, message: 'Просьба ввести сортировку' },
+                  { required: true, message: 'Просьба ввести заголовок' },
                 ]}
               >
-                <Input placeholder="Просьба ввести сортировку" />
+                <Input placeholder="Просьба ввести заголовок" />
               </Form.Item>
             </Col>
           </Row>
@@ -509,7 +514,6 @@ export default function Menus() {
         <Form
           layout="vertical"
           form={mergeForm}
-          hideRequiredMark
           size="small"
           onFinish={onProductsFinish}
         >
@@ -601,15 +605,45 @@ export default function Menus() {
               type: 'checkbox',
               onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
                 setSelectedProducts(selectedRows)
+                setSelectedVariant(null)
+                let editableCount = selectedRows.filter(
+                  (prod) => !prod.product_id && prod.price <= 0
+                )
+                if (editableCount.length === 1) {
+                  fetchVariants(editableCount[0].id)
+                } else {
+                  setVariants([])
+                }
               },
-              // getCheckboxProps: (record: any) => ({
-              //   disabled: parseInt(record.price, 0) <= 0,
-              // }),
             }}
           />
         </Col>
         <Col span={8}>
           <div className="font-bold text-xl mb-3">Варианты</div>
+          <div className="flex space-x-2 mb-3">
+            <Button
+              type="primary"
+              onClick={editVariant}
+              disabled={!selectedVariant}
+            >
+              <EditOutlined /> Редактировать
+            </Button>
+          </div>
+          <Table
+            columns={productsColumns}
+            dataSource={variants}
+            loading={isVariantsLoading}
+            expandable={{ expandedRowRender }}
+            rowKey="id"
+            size="small"
+            bordered
+            rowSelection={{
+              type: 'radio',
+              onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+                setSelectedVariant(selectedRows[0])
+              },
+            }}
+          />
         </Col>
       </Row>
     </MainLayout>

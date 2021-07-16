@@ -328,7 +328,6 @@ export default function Menus() {
         <Form
           layout="vertical"
           form={form}
-          hideRequiredMark
           size="small"
           onFinish={onMenuFinish}
           initialValues={editingRecord ? editingRecord : undefined}
@@ -378,7 +377,6 @@ export default function Menus() {
         <Form
           layout="vertical"
           form={menuForm}
-          hideRequiredMark
           size="small"
           onFinish={onMenuFinish}
           initialValues={editingMenuRecord ? editingMenuRecord : undefined}
