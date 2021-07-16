@@ -221,7 +221,6 @@ export default function Langs() {
         <Form
           layout="vertical"
           form={form}
-          hideRequiredMark
           size="small"
           onFinish={onFinish}
           initialValues={editingRecord ? editingRecord : undefined}
