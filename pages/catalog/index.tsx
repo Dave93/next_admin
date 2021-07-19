@@ -29,6 +29,7 @@ import Cookies from 'js-cookie'
 import defaultChannel from '@services/defaultChannel'
 import { Key } from 'antd/lib/table/interface'
 import { DataNode, EventDataNode } from 'antd/lib/tree'
+import Checkbox from 'antd/lib/checkbox/Checkbox'
 
 const { publicRuntimeConfig } = getConfig()
 let webAddress = publicRuntimeConfig.apiUrl
@@ -87,8 +88,14 @@ export default function Menus() {
   const editCategory = () => {
     setEditingCategory(selectedCategory)
     let name = selectedCategory.attribute_data.name[channelName]
+    console.log('activeCategory', selectedCategory)
     form.resetFields()
-    form.setFieldsValue({ name_ru: name.ru, name_uz: name.uz })
+    form.setFieldsValue({
+      name_ru: name.ru,
+      name_uz: name.uz,
+      active: !!selectedCategory.active,
+    })
+    fetchData()
     setDrawer(true)
   }
 
@@ -200,8 +207,10 @@ export default function Menus() {
     setIsSubmittingForm(true)
     setAxiosCredentials()
     if (editingCategory) {
+      console.log(values)
       await axios.put(`${webAddress}/api/categories/${editingCategory?.id}`, {
         ...values,
+        active: values.active ? '1' : '0',
       })
     }
     setIsSubmittingForm(false)
@@ -254,7 +263,7 @@ export default function Menus() {
     }
   ) => {
     setSelectedProducts([])
-    setSelectedCategory(info.node)
+    setSelectedCategory(info.selectedNodes[0])
     fetchProducts(info?.node?.id)
   }
 
@@ -411,6 +420,13 @@ export default function Menus() {
                 rules={[{ required: true, message: 'Просьба ввести название' }]}
               >
                 <Input placeholder="Просьба ввести название" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="active" valuePropName="checked">
+                <Checkbox>Активность</Checkbox>
               </Form.Item>
             </Col>
           </Row>
