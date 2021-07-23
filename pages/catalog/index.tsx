@@ -73,7 +73,17 @@ export default function Menus() {
       console.log('Dropped files', e.dataTransfer.files)
     },
 
-    customRequest: async function ({ file }: { file: any }) {
+    customRequest: function ({
+      file,
+      onProgress,
+      onError,
+      onSuccess,
+    }: {
+      file: any
+      onProgress: Function
+      onError: any
+      onSuccess: Function
+    }) {
       console.log(arguments)
       setAxiosCredentials()
       console.log(selectedProducts[0])
@@ -87,11 +97,22 @@ export default function Menus() {
         'abcdefghijklmnopqrstuvwxyz1234567890'
       )
       formData.append('parent_id', hashids.encode(selectedProducts[0].id))
-      await axios.post(`${webAddress}/api/v1/assets`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      axios
+        .post(`${webAddress}/api/v1/assets`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: ({ total, loaded }) => {
+            onProgress(
+              { percent: Math.round((loaded / total) * 100).toFixed(2) },
+              file
+            )
+          },
+        })
+        .then(({ data: response }) => {
+          onSuccess(response, file)
+        })
+        .catch(onError)
     },
   }
 
