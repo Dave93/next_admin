@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Image from 'next/image'
 import {
   Drawer,
   Form,
@@ -21,6 +22,7 @@ import {
   MergeCellsOutlined,
   DownOutlined,
   InboxOutlined,
+  CloseOutlined,
 } from '@ant-design/icons'
 import getConfig from 'next/config'
 import React, { useState, useRef, useEffect, useMemo } from 'react'
@@ -34,6 +36,11 @@ import { Key } from 'antd/lib/table/interface'
 import { DataNode, EventDataNode } from 'antd/lib/tree'
 import Checkbox from 'antd/lib/checkbox/Checkbox'
 import Hashids from 'hashids'
+import {
+  BeforeUploadFileType,
+  RcFile,
+  UploadRequestError,
+} from 'rc-upload/lib/interface'
 
 const { publicRuntimeConfig } = getConfig()
 let webAddress = publicRuntimeConfig.apiUrl
@@ -60,29 +67,26 @@ export default function Menus() {
     action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
     onChange(info: any) {
       const { status } = info.file
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList)
-      }
       if (status === 'done') {
         message.success(`${info.file.name} file uploaded successfully.`)
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`)
       }
     },
-    onDrop(e: any) {
-      console.log('Dropped files', e.dataTransfer.files)
-    },
-
-    customRequest: function ({
-      file,
-      onProgress,
-      onError,
-      onSuccess,
+    customRequest({
+      options: {
+        file,
+        // onProgress,
+        onError,
+        onSuccess,
+      },
     }: {
-      file: any
-      onProgress: Function
-      onError: any
-      onSuccess: Function
+      options: {
+        file: Exclude<BeforeUploadFileType, File | boolean> | RcFile
+        // onProgress: (event: UploadProgressEvent) => void
+        onError: (event: UploadRequestError | ProgressEvent, body?: any) => void
+        onSuccess: (body: any, xhr: XMLHttpRequest) => void
+      }
     }) {
       console.log(arguments)
       setAxiosCredentials()
@@ -102,15 +106,14 @@ export default function Menus() {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-          onUploadProgress: ({ total, loaded }) => {
-            onProgress(
-              { percent: Math.round((loaded / total) * 100).toFixed(2) },
-              file
-            )
-          },
+          // onUploadProgress: ({ total, loaded }) => {
+          //   // onProgress(
+          //   //   { percent: Math.round((loaded / total) * 100).toFixed(2).toNumber },
+          //   // )
+          // },
         })
         .then(({ data: response }) => {
-          onSuccess(response, file)
+          onSuccess(response, response)
         })
         .catch(onError)
     },
@@ -149,6 +152,8 @@ export default function Menus() {
   const [channelName, setChannelName] = useState('')
   const [productSearchText, setProductSearchText] = useState('')
 
+  const [isShowUploader, setShowUploader] = useState(false)
+
   // Forms
   const [form] = Form.useForm()
   const [mergeForm] = Form.useForm()
@@ -167,7 +172,11 @@ export default function Menus() {
   }
 
   const editProduct = () => {
-    let name = selectedProducts[0].attribute_data.name[channelName]
+    const prod = selectedProducts[0]
+    let name = prod.attribute_data.name[channelName]
+
+    setShowUploader(prod.asset ? false : true)
+
     mergeForm.resetFields()
     mergeForm.setFieldsValue({
       name_ru: name.ru,
@@ -298,11 +307,18 @@ export default function Menus() {
     setIsMergeSubmittingForm(true)
     setAxiosCredentials()
 
-    await axios.post(`${webAddress}/api/products/merge`, {
-      ...values,
-      productIds: selectedProducts.map((prod) => prod.id),
-      categoryId: selectedCategory.id,
-    })
+    if (selectedProducts.length == 1) {
+      await axios.put(`${webAddress}/api/products/${selectedProducts[0].id}`, {
+        ...values,
+        custom_name: values.name_ru,
+      })
+    } else {
+      await axios.post(`${webAddress}/api/products/merge`, {
+        ...values,
+        productIds: selectedProducts.map((prod) => prod.id),
+        categoryId: selectedCategory.id,
+      })
+    }
 
     setIsMergeSubmittingForm(false)
     closeMergeDrawer()
@@ -325,6 +341,21 @@ export default function Menus() {
     if (editableCount.length === 1) {
       fetchVariants(editableCount[0].id)
     }
+  }
+
+  const deleteAsset = async (assetId: number) => {
+    setAxiosCredentials()
+
+    await axios.post(`${webAddress}/api/products/unlink_asset`, {
+      assetId,
+    })
+
+    setSelectedProducts([
+      {
+        ...selectedProducts[0],
+        asset: null,
+      },
+    ])
   }
 
   const onSearch = async (value: any) => {
@@ -641,18 +672,46 @@ export default function Menus() {
           {selectedProducts[0]?.price == 0 && (
             <Row>
               <Col span={24}>
-                <Dragger {...dropProps}>
-                  <p className="ant-upload-drag-icon">
-                    <InboxOutlined />
-                  </p>
-                  <p className="ant-upload-text">
-                    Click or drag file to this area to upload
-                  </p>
-                  <p className="ant-upload-hint">
-                    Support for a single or bulk upload. Strictly prohibit from
-                    uploading company data or other band files
-                  </p>
-                </Dragger>
+                {isShowUploader ? (
+                  <Dragger {...dropProps}>
+                    <div>
+                      <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                      </p>
+                      <p className="ant-upload-text">
+                        Click or drag file to this area to upload
+                      </p>
+                      <p className="ant-upload-hint">
+                        Support for a single or bulk upload. Strictly prohibit
+                        from uploading company data or other band files
+                      </p>
+                    </div>
+                  </Dragger>
+                ) : (
+                  <div>
+                    {selectedProducts[0].asset && (
+                      <div className="relative w-28">
+                        <Image
+                          src={selectedProducts[0].asset.link}
+                          width="100"
+                          height="100"
+                        />
+                        <div className="absolute top-0 right-0">
+                          <Button
+                            size="small"
+                            icon={<CloseOutlined />}
+                            danger
+                            shape="circle"
+                            type="primary"
+                            onClick={() =>
+                              deleteAsset(selectedProducts[0].asset.id)
+                            }
+                          ></Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </Col>
             </Row>
           )}

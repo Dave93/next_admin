@@ -19,4 +19,11 @@ module.exports = {
       },
     ]
   },
+  images: {
+    domains: [
+      'store.hq.fungeek.net',
+      'api.hq.fungeek.net',
+      'admin.hq.fungeek.net',
+    ],
+  },
 }
