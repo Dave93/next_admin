@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Image from 'next/image'
 import {
   Drawer,
   Form,
@@ -10,6 +11,8 @@ import {
   Tooltip,
   Popconfirm,
   Tree,
+  Upload,
+  message,
 } from 'antd'
 import {
   PlusOutlined,
@@ -18,6 +21,8 @@ import {
   QuestionCircleOutlined,
   MergeCellsOutlined,
   DownOutlined,
+  InboxOutlined,
+  CloseOutlined,
 } from '@ant-design/icons'
 import getConfig from 'next/config'
 import React, { useState, useRef, useEffect, useMemo } from 'react'
@@ -30,11 +35,23 @@ import defaultChannel from '@services/defaultChannel'
 import { Key } from 'antd/lib/table/interface'
 import { DataNode, EventDataNode } from 'antd/lib/tree'
 import Checkbox from 'antd/lib/checkbox/Checkbox'
+import Hashids from 'hashids'
+import {
+  BeforeUploadFileType,
+  RcFile,
+  UploadRequestError,
+  UploadRequestOption as RcCustomRequestOptions,
+  UploadProgressEvent,
+  UploadRequestHeader,
+  UploadRequestMethod,
+} from 'rc-upload/lib/interface'
 
 const { publicRuntimeConfig } = getConfig()
 let webAddress = publicRuntimeConfig.apiUrl
 
 axios.defaults.withCredentials = true
+
+const { Dragger } = Upload
 
 export default function Menus() {
   const user = authRequired({})
@@ -46,6 +63,82 @@ export default function Menus() {
       return
     }
   }, [])
+
+  const dropProps = {
+    name: 'file',
+    multiple: true,
+    maxCount: 1,
+    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    onChange(info: any) {
+      const { status } = info.file
+      if (status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully.`)
+      } else if (status === 'error') {
+        message.error(`${info.file.name} file upload failed.`)
+      }
+    },
+    customRequest: async (options: RcCustomRequestOptions) => {
+      //   {
+      //   file,
+      //   // onProgress,
+      //   onError,
+      //   onSuccess,
+      // }: {
+      //   file: Exclude<BeforeUploadFileType, File | boolean> | RcFile
+      //   // onProgress: (event: UploadProgressEvent) => void
+      //   onError: (event: UploadRequestError | ProgressEvent, body?: any) => void
+      //   onSuccess: (body: any, xhr: XMLHttpRequest) => void
+      //   }
+      const {
+        onSuccess,
+        onError,
+        file,
+        onProgress,
+      }: {
+        onProgress?: (event: UploadProgressEvent) => void
+        onError?: (
+          event: UploadRequestError | ProgressEvent,
+          body?: any
+        ) => void
+        onSuccess?: (body: any, xhr: XMLHttpRequest) => void
+        data?: object
+        filename?: string
+        file: Exclude<BeforeUploadFileType, File | boolean> | RcFile
+        withCredentials?: boolean
+        action: string
+        headers?: UploadRequestHeader
+        method: UploadRequestMethod
+      } = options
+      // console.log(arguments)
+      setAxiosCredentials()
+      console.log(selectedProducts[0])
+      var formData = new FormData()
+      formData.append('file', file)
+      formData.append('parent', 'products')
+      formData.append('primary', 'true')
+      const hashids = new Hashids(
+        'product',
+        8,
+        'abcdefghijklmnopqrstuvwxyz1234567890'
+      )
+      formData.append('parent_id', hashids.encode(selectedProducts[0].id))
+
+      const config = {
+        headers: { 'content-type': 'multipart/form-data' },
+        onUploadProgress: (event: any) => {
+          const percent: number = Math.floor((event.loaded / event.total) * 100)
+          const progress: UploadProgressEvent = { ...event, percent }
+          onProgress && onProgress(progress)
+        },
+      }
+      axios
+        .post(`${webAddress}/api/v1/assets`, formData, config)
+        .then(({ data: response }) => {
+          onSuccess && onSuccess(response, response)
+        })
+        .catch(onError)
+    },
+  }
 
   // Drawers
   const [isDrawerVisible, setDrawer] = useState(false)
@@ -80,6 +173,8 @@ export default function Menus() {
   const [channelName, setChannelName] = useState('')
   const [productSearchText, setProductSearchText] = useState('')
 
+  const [isShowUploader, setShowUploader] = useState(false)
+
   // Forms
   const [form] = Form.useForm()
   const [mergeForm] = Form.useForm()
@@ -88,15 +183,27 @@ export default function Menus() {
   const editCategory = () => {
     setEditingCategory(selectedCategory)
     let name = selectedCategory.attribute_data.name[channelName]
-    console.log('activeCategory', selectedCategory)
     form.resetFields()
     form.setFieldsValue({
       name_ru: name.ru,
       name_uz: name.uz,
       active: !!selectedCategory.active,
     })
-    fetchData()
     setDrawer(true)
+  }
+
+  const editProduct = () => {
+    const prod = selectedProducts[0]
+    let name = prod.attribute_data.name[channelName]
+
+    setShowUploader(prod.asset ? false : true)
+
+    mergeForm.resetFields()
+    mergeForm.setFieldsValue({
+      name_ru: name.ru,
+      name_uz: name.uz,
+    })
+    setMergeDrawerVisible(true)
   }
 
   const editVariant = () => {
@@ -207,7 +314,6 @@ export default function Menus() {
     setIsSubmittingForm(true)
     setAxiosCredentials()
     if (editingCategory) {
-      console.log(values)
       await axios.put(`${webAddress}/api/categories/${editingCategory?.id}`, {
         ...values,
         active: values.active ? '1' : '0',
@@ -222,11 +328,18 @@ export default function Menus() {
     setIsMergeSubmittingForm(true)
     setAxiosCredentials()
 
-    await axios.post(`${webAddress}/api/products/merge`, {
-      ...values,
-      productIds: selectedProducts.map((prod) => prod.id),
-      categoryId: selectedCategory.id,
-    })
+    if (selectedProducts.length == 1) {
+      await axios.put(`${webAddress}/api/products/${selectedProducts[0].id}`, {
+        ...values,
+        custom_name: values.name_ru,
+      })
+    } else {
+      await axios.post(`${webAddress}/api/products/merge`, {
+        ...values,
+        productIds: selectedProducts.map((prod) => prod.id),
+        categoryId: selectedCategory.id,
+      })
+    }
 
     setIsMergeSubmittingForm(false)
     closeMergeDrawer()
@@ -249,6 +362,21 @@ export default function Menus() {
     if (editableCount.length === 1) {
       fetchVariants(editableCount[0].id)
     }
+  }
+
+  const deleteAsset = async (assetId: number) => {
+    setAxiosCredentials()
+
+    await axios.post(`${webAddress}/api/products/unlink_asset`, {
+      assetId,
+    })
+
+    setSelectedProducts([
+      {
+        ...selectedProducts[0],
+        asset: null,
+      },
+    ])
   }
 
   const onSearch = async (value: any) => {
@@ -280,7 +408,7 @@ export default function Menus() {
   const activeProductEdit = useMemo(() => {
     let active = false
     const prodLength = selectedProducts.filter(
-      (prod) => prod.price <= 0 && !prod.product_id
+      (prod) => !prod.product_id
     ).length
     active = prodLength == 1 && prodLength == selectedProducts.length
     return active
@@ -503,7 +631,11 @@ export default function Menus() {
         </Form>
       </Drawer>
       <Drawer
-        title={'Объединить товары'}
+        title={
+          selectedProducts[0]?.price == 0
+            ? 'Сохранить товар'
+            : 'Объединить товары'
+        }
         width={720}
         onClose={closeMergeDrawer}
         visible={isMergeDrawerVisible}
@@ -522,7 +654,7 @@ export default function Menus() {
               loading={isMergeSubmittingForm}
               type="primary"
             >
-              Объединить
+              {selectedProducts[0]?.price == 0 ? 'Сохранить' : 'Объединить'}
             </Button>
           </div>
         }
@@ -532,6 +664,7 @@ export default function Menus() {
           form={mergeForm}
           size="small"
           onFinish={onProductsFinish}
+          initialValues={selectedProducts[0] ? selectedProducts[0] : undefined}
         >
           <Row gutter={16}>
             <Col span={12}>
@@ -557,6 +690,49 @@ export default function Menus() {
               </Form.Item>
             </Col>
           </Row>
+          {selectedProducts[0]?.price == 0 && (
+            <Row>
+              <Col span={24}>
+                {isShowUploader ? (
+                  <Dragger {...dropProps}>
+                    <div>
+                      <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                      </p>
+                      <p className="ant-upload-text">
+                        Нажмите или перетащите файл в эту область, чтобы
+                        загрузить
+                      </p>
+                    </div>
+                  </Dragger>
+                ) : (
+                  <div>
+                    {selectedProducts[0].asset && (
+                      <div className="relative w-28">
+                        <Image
+                          src={selectedProducts[0].asset.link}
+                          width="100"
+                          height="100"
+                        />
+                        <div className="absolute top-0 right-0">
+                          <Button
+                            size="small"
+                            icon={<CloseOutlined />}
+                            danger
+                            shape="circle"
+                            type="primary"
+                            onClick={() =>
+                              deleteAsset(selectedProducts[0].asset.id)
+                            }
+                          ></Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Col>
+            </Row>
+          )}
         </Form>
       </Drawer>
       <Row gutter={16}>
@@ -598,7 +774,7 @@ export default function Menus() {
             </Button>
             <Button
               type="primary"
-              onClick={editCategory}
+              onClick={editProduct}
               disabled={!activeProductEdit}
             >
               <EditOutlined /> Редактировать
