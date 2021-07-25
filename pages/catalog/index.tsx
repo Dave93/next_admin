@@ -40,6 +40,10 @@ import {
   BeforeUploadFileType,
   RcFile,
   UploadRequestError,
+  UploadRequestOption as RcCustomRequestOptions,
+  UploadProgressEvent,
+  UploadRequestHeader,
+  UploadRequestMethod,
 } from 'rc-upload/lib/interface'
 
 const { publicRuntimeConfig } = getConfig()
@@ -73,22 +77,39 @@ export default function Menus() {
         message.error(`${info.file.name} file upload failed.`)
       }
     },
-    customRequest({
-      options: {
-        file,
-        // onProgress,
-        onError,
+    customRequest: async (options: RcCustomRequestOptions) => {
+      //   {
+      //   file,
+      //   // onProgress,
+      //   onError,
+      //   onSuccess,
+      // }: {
+      //   file: Exclude<BeforeUploadFileType, File | boolean> | RcFile
+      //   // onProgress: (event: UploadProgressEvent) => void
+      //   onError: (event: UploadRequestError | ProgressEvent, body?: any) => void
+      //   onSuccess: (body: any, xhr: XMLHttpRequest) => void
+      //   }
+      const {
         onSuccess,
-      },
-    }: {
-      options: {
+        onError,
+        file,
+        onProgress,
+      }: {
+        onProgress?: (event: UploadProgressEvent) => void
+        onError?: (
+          event: UploadRequestError | ProgressEvent,
+          body?: any
+        ) => void
+        onSuccess?: (body: any, xhr: XMLHttpRequest) => void
+        data?: object
+        filename?: string
         file: Exclude<BeforeUploadFileType, File | boolean> | RcFile
-        // onProgress: (event: UploadProgressEvent) => void
-        onError: (event: UploadRequestError | ProgressEvent, body?: any) => void
-        onSuccess: (body: any, xhr: XMLHttpRequest) => void
-      }
-    }) {
-      console.log(arguments)
+        withCredentials?: boolean
+        action: string
+        headers?: UploadRequestHeader
+        method: UploadRequestMethod
+      } = options
+      // console.log(arguments)
       setAxiosCredentials()
       console.log(selectedProducts[0])
       var formData = new FormData()
@@ -101,19 +122,19 @@ export default function Menus() {
         'abcdefghijklmnopqrstuvwxyz1234567890'
       )
       formData.append('parent_id', hashids.encode(selectedProducts[0].id))
+
+      const config = {
+        headers: { 'content-type': 'multipart/form-data' },
+        onUploadProgress: (event: any) => {
+          const percent: number = Math.floor((event.loaded / event.total) * 100)
+          const progress: UploadProgressEvent = { ...event, percent }
+          onProgress && onProgress(progress)
+        },
+      }
       axios
-        .post(`${webAddress}/api/v1/assets`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          // onUploadProgress: ({ total, loaded }) => {
-          //   // onProgress(
-          //   //   { percent: Math.round((loaded / total) * 100).toFixed(2).toNumber },
-          //   // )
-          // },
-        })
+        .post(`${webAddress}/api/v1/assets`, formData, config)
         .then(({ data: response }) => {
-          onSuccess(response, response)
+          onSuccess && onSuccess(response, response)
         })
         .catch(onError)
     },
@@ -679,11 +700,8 @@ export default function Menus() {
                         <InboxOutlined />
                       </p>
                       <p className="ant-upload-text">
-                        Click or drag file to this area to upload
-                      </p>
-                      <p className="ant-upload-hint">
-                        Support for a single or bulk upload. Strictly prohibit
-                        from uploading company data or other band files
+                        Нажмите или перетащите файл в эту область, чтобы
+                        загрузить
                       </p>
                     </div>
                   </Dragger>
