@@ -190,13 +190,21 @@ const CatalogPage = function () {
   const editProduct = () => {
     const prod = selectedProducts[0]
     let name = prod.attribute_data.name[channelName]
-
+    let description_ru = ''
+    let description_uz = ''
+    if (prod.attribute_data?.description) {
+      let desc = prod.attribute_data?.description[channelName]
+      description_ru = desc?.ru || ''
+      description_uz = desc?.uz || ''
+    }
     setShowUploader(prod.asset ? false : true)
 
     mergeForm.resetFields()
     mergeForm.setFieldsValue({
       name_ru: name.ru,
       name_uz: name.uz,
+      description_ru,
+      description_uz,
     })
     setMergeDrawerVisible(true)
   }
@@ -733,7 +741,7 @@ const CatalogPage = function () {
               <Form.Item name="description_ru" label="Описание(RU)">
                 <ReactQuill
                   theme="snow"
-                  value={ruDescriptionEditorState}
+                  value={ruDescriptionEditorState || ''}
                   onChange={(content: string) => {
                     console.log(typeof content)
                     setRuDescriptionEditorState(content)
@@ -747,7 +755,7 @@ const CatalogPage = function () {
               <Form.Item name="description_uz" label="Описание(UZ)">
                 <ReactQuill
                   theme="snow"
-                  value={uzDescriptionEditorState}
+                  value={uzDescriptionEditorState || ''}
                   onChange={(content: string) => {
                     console.log(typeof content)
                     setUzDescriptionEditorState(content)
