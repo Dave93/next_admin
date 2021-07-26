@@ -217,6 +217,7 @@ const CatalogPage = function () {
       name_ru: name.ru,
       name_uz: name.uz,
       custom_name: selectedVariant.custom_name,
+      custom_name_uz: selectedVariant.custom_name_uz,
     })
     setVariantDrawer(true)
   }
@@ -622,7 +623,18 @@ const CatalogPage = function () {
             <Col span={12}>
               <Form.Item
                 name="custom_name"
-                label="Заголовок варианта"
+                label="Заголовок варианта(RU)"
+                rules={[
+                  { required: true, message: 'Просьба ввести заголовок' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="custom_name_uz"
+                label="Заголовок варианта(UZ)"
                 rules={[
                   { required: true, message: 'Просьба ввести заголовок' },
                 ]}
