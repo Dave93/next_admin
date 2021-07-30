@@ -55,6 +55,12 @@ axios.defaults.withCredentials = true
 
 const { Dragger } = Upload
 
+async function asyncForEach(array: any[], callback: Function) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
+
 const CatalogPage = function () {
   const user = authRequired({})
   const {
@@ -128,6 +134,19 @@ const CatalogPage = function () {
           onSuccess && onSuccess(response, response)
         })
         .catch(onError)
+
+      if (variants && variants.length) {
+        await Promise.all(
+          variants.map(async (v: any) => {
+            var formData = new FormData()
+            formData.append('file', file)
+            formData.append('parent', 'products')
+            formData.append('primary', 'true')
+            formData.append('parent_id', hashids.encode(v.id))
+            await axios.post(`${webAddress}/api/v1/assets`, formData, config)
+          })
+        )
+      }
     },
   }
 
