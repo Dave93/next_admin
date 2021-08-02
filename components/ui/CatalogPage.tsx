@@ -517,7 +517,6 @@ const CatalogPage = function () {
       />
     )
   }
-  console.log('ruDesc', ruDescriptionEditorState)
   return (
     <MainLayout title="Каталог">
       <Drawer
@@ -767,34 +766,36 @@ const CatalogPage = function () {
               </Col>
             </Row>
           )}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item name="description_ru" label="Описание(RU)">
-                <ReactQuill
-                  theme="snow"
-                  value={ruDescriptionEditorState || ''}
-                  onChange={(content: string) => {
-                    console.log(typeof content)
-                    setRuDescriptionEditorState(content)
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item name="description_uz" label="Описание(UZ)">
-                <ReactQuill
-                  theme="snow"
-                  value={uzDescriptionEditorState || ''}
-                  onChange={(content: string) => {
-                    console.log(typeof content)
-                    setUzDescriptionEditorState(content)
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+          {selectedProducts[0]?.price == 0 && (
+            <>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item name="description_ru" label="Описание(RU)">
+                    <ReactQuill
+                      theme="snow"
+                      value={ruDescriptionEditorState || ''}
+                      onChange={(content: string) => {
+                        setRuDescriptionEditorState(content)
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item name="description_uz" label="Описание(UZ)">
+                    <ReactQuill
+                      theme="snow"
+                      value={uzDescriptionEditorState || ''}
+                      onChange={(content: string) => {
+                        setUzDescriptionEditorState(content)
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </>
+          )}
         </Form>
       </Drawer>
       <Row gutter={16}>
