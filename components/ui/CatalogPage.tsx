@@ -55,6 +55,12 @@ axios.defaults.withCredentials = true
 
 const { Dragger } = Upload
 
+async function asyncForEach(array: any[], callback: Function) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
+
 const CatalogPage = function () {
   const user = authRequired({})
   const {
@@ -128,6 +134,19 @@ const CatalogPage = function () {
           onSuccess && onSuccess(response, response)
         })
         .catch(onError)
+
+      if (variants && variants.length) {
+        await Promise.all(
+          variants.map(async (v: any) => {
+            var formData = new FormData()
+            formData.append('file', file)
+            formData.append('parent', 'products')
+            formData.append('primary', 'true')
+            formData.append('parent_id', hashids.encode(v.id))
+            await axios.post(`${webAddress}/api/v1/assets`, formData, config)
+          })
+        )
+      }
     },
   }
 
@@ -498,7 +517,6 @@ const CatalogPage = function () {
       />
     )
   }
-  console.log('ruDesc', ruDescriptionEditorState)
   return (
     <MainLayout title="Каталог">
       <Drawer
@@ -748,34 +766,36 @@ const CatalogPage = function () {
               </Col>
             </Row>
           )}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item name="description_ru" label="Описание(RU)">
-                <ReactQuill
-                  theme="snow"
-                  value={ruDescriptionEditorState || ''}
-                  onChange={(content: string) => {
-                    console.log(typeof content)
-                    setRuDescriptionEditorState(content)
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item name="description_uz" label="Описание(UZ)">
-                <ReactQuill
-                  theme="snow"
-                  value={uzDescriptionEditorState || ''}
-                  onChange={(content: string) => {
-                    console.log(typeof content)
-                    setUzDescriptionEditorState(content)
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+          {selectedProducts[0]?.price == 0 && (
+            <>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item name="description_ru" label="Описание(RU)">
+                    <ReactQuill
+                      theme="snow"
+                      value={ruDescriptionEditorState || ''}
+                      onChange={(content: string) => {
+                        setRuDescriptionEditorState(content)
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item name="description_uz" label="Описание(UZ)">
+                    <ReactQuill
+                      theme="snow"
+                      value={uzDescriptionEditorState || ''}
+                      onChange={(content: string) => {
+                        setUzDescriptionEditorState(content)
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </>
+          )}
         </Form>
       </Drawer>
       <Row gutter={16}>
