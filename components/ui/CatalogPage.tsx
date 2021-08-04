@@ -159,6 +159,7 @@ const CatalogPage = function () {
   const [editingCategory, setEditingCategory] = useState(null as any)
   const [editingMenuRecord, setEditingMenuRecord] = useState(null as any)
   const [editingVariant, setEditingVariant] = useState(null as any)
+  const [isMergingMode, setIsMergingMode] = useState(false)
 
   // Table loaders
   const [isMenuLoading, setIsMenuLoading] = useState(false)
@@ -267,6 +268,7 @@ const CatalogPage = function () {
   }
 
   const startMergeProducts = () => {
+    setIsMergingMode(true)
     setMergeDrawerVisible(true)
   }
 
@@ -365,6 +367,7 @@ const CatalogPage = function () {
     }
 
     setIsMergeSubmittingForm(false)
+    setIsMergingMode(false)
     closeMergeDrawer()
     fetchProducts(selectedCategory.id)
   }
@@ -664,11 +667,7 @@ const CatalogPage = function () {
         </Form>
       </Drawer>
       <Drawer
-        title={
-          selectedProducts[0]?.price == 0
-            ? 'Сохранить товар'
-            : 'Объединить товары'
-        }
+        title={isMergingMode ? 'Объединить товары' : 'Сохранить товар'}
         width={720}
         onClose={closeMergeDrawer}
         visible={isMergeDrawerVisible}
@@ -687,7 +686,7 @@ const CatalogPage = function () {
               loading={isMergeSubmittingForm}
               type="primary"
             >
-              {selectedProducts[0]?.price == 0 ? 'Сохранить' : 'Объединить'}
+              {isMergingMode ? 'Объединить' : 'Сохранить'}
             </Button>
           </div>
         }
@@ -723,7 +722,7 @@ const CatalogPage = function () {
               </Form.Item>
             </Col>
           </Row>
-          {selectedProducts[0]?.price == 0 && (
+          {!isMergingMode && selectedProducts[0] && (
             <Row>
               <Col span={24}>
                 {isShowUploader ? (
@@ -766,7 +765,7 @@ const CatalogPage = function () {
               </Col>
             </Row>
           )}
-          {selectedProducts[0]?.price == 0 && (
+          {!isMergingMode && (
             <>
               <Row gutter={16}>
                 <Col span={24}>
