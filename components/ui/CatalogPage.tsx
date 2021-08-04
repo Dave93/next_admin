@@ -179,6 +179,7 @@ const CatalogPage = function () {
   const [selectedCategory, setSelectedCategory] = useState(null as any)
   const [selectedProducts, setSelectedProducts] = useState([] as any[])
   const [selectedVariant, setSelectedVariant] = useState(null as any)
+  const [prodSelectedRowKeys, setProdSelectedRowKeys] = useState([] as any)
 
   // Search and Channel
   const [channelName, setChannelName] = useState('')
@@ -369,6 +370,8 @@ const CatalogPage = function () {
     setIsMergeSubmittingForm(false)
     setIsMergingMode(false)
     closeMergeDrawer()
+    setSelectedProducts([])
+    setProdSelectedRowKeys([])
     fetchProducts(selectedCategory.id)
   }
 
@@ -418,6 +421,7 @@ const CatalogPage = function () {
   ) => {
     setSelectedProducts([])
     setSelectedCategory(info.selectedNodes[0])
+    setProdSelectedRowKeys([])
     fetchProducts(info?.node?.id)
   }
 
@@ -857,8 +861,10 @@ const CatalogPage = function () {
             bordered
             rowSelection={{
               type: 'checkbox',
+              selectedRowKeys: prodSelectedRowKeys,
               onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
                 setSelectedProducts(selectedRows)
+                setProdSelectedRowKeys(selectedRowKeys)
                 setSelectedVariant(null)
                 let editableCount = selectedRows.filter(
                   (prod) => !prod.product_id && prod.price <= 0
