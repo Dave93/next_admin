@@ -243,18 +243,6 @@ const CatalogPage = function () {
     setVariantDrawer(true)
   }
 
-  const addRecord = () => {
-    setEditingCategory(null)
-    form.resetFields()
-    setDrawer(true)
-  }
-
-  const deleteMenuItem = async (record: any) => {
-    setIsMenuLoading(true)
-    await axios.delete(`${webAddress}/api/menu_items/${record.id}`)
-    // menuItems()
-  }
-
   const closeDrawer = () => {
     setEditingCategory(null)
     setDrawer(false)
@@ -271,19 +259,6 @@ const CatalogPage = function () {
   const startMergeProducts = () => {
     setIsMergingMode(true)
     setMergeDrawerVisible(true)
-  }
-
-  const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
-    confirm()
-    // this.setState({
-    //   searchText: selectedKeys[0],
-    //   searchedColumn: dataIndex,
-    // })
-  }
-
-  const handleReset = (clearFilters: any) => {
-    clearFilters()
-    // this.setState({ searchText: '' })
   }
 
   const fetchData = async () => {
@@ -358,6 +333,7 @@ const CatalogPage = function () {
       await axios.put(`${webAddress}/api/products/${selectedProducts[0].id}`, {
         ...values,
         custom_name: values.name_ru,
+        active: values.active ? '1' : '0',
       })
     } else {
       await axios.post(`${webAddress}/api/products/merge`, {
@@ -726,6 +702,15 @@ const CatalogPage = function () {
               </Form.Item>
             </Col>
           </Row>
+          {!isMergingMode && selectedProducts[0] && (
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item name="active" valuePropName="checked">
+                  <Checkbox>Активность</Checkbox>
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
           {!isMergingMode && selectedProducts[0] && (
             <Row>
               <Col span={24}>
