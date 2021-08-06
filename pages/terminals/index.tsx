@@ -13,6 +13,7 @@ import {
   Tooltip,
   TimePicker,
   Switch,
+  Radio,
 } from 'antd'
 import { PlusOutlined, SearchOutlined, EditOutlined } from '@ant-design/icons'
 import getConfig from 'next/config'
@@ -23,6 +24,7 @@ import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
 import LoadingScreen from '@components/ui/LoadingScreen'
 import Cookies from 'js-cookie'
+import moment from 'moment'
 
 const { publicRuntimeConfig } = getConfig()
 let webAddress = publicRuntimeConfig.apiUrl
@@ -66,7 +68,28 @@ const Terminals = () => {
   const editRecord = (record: any) => {
     setEditingRecord(record)
     form.resetFields()
-    form.setFieldsValue(record)
+
+    const formData = { ...record }
+    if (formData.delivery_time) {
+      formData.delivery_time = moment(formData.delivery_time)
+    }
+    if (formData.pickup_time) {
+      formData.pickup_time = moment(formData.pickup_time)
+    }
+    if (formData.open_work) {
+      formData.open_work = moment(formData.open_work)
+    }
+    if (formData.close_work) {
+      formData.close_work = moment(formData.close_work)
+    }
+    if (formData.open_weekend) {
+      formData.open_weekend = moment(formData.open_weekend)
+    }
+    if (formData.close_weekend) {
+      formData.close_weekend = moment(formData.close_weekend)
+    }
+
+    form.setFieldsValue(formData)
     setDrawer(true)
   }
 
@@ -372,6 +395,15 @@ const Terminals = () => {
                 valuePropName="checked"
               >
                 <Switch />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="delivery_type" label="Тип">
+                <Radio.Group buttonStyle="solid">
+                  <Radio.Button value="all">Все</Radio.Button>
+                  <Radio.Button value="deliver">Доставка</Radio.Button>
+                  <Radio.Button value="pickup">Самовывоз</Radio.Button>
+                </Radio.Group>
               </Form.Item>
             </Col>
           </Row>
