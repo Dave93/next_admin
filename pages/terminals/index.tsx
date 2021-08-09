@@ -14,6 +14,8 @@ import {
   TimePicker,
   Switch,
   Radio,
+  Tabs,
+  Divider,
 } from 'antd'
 import { PlusOutlined, SearchOutlined, EditOutlined } from '@ant-design/icons'
 import getConfig from 'next/config'
@@ -32,6 +34,10 @@ let webAddress = publicRuntimeConfig.apiUrl
 const format = 'HH:mm'
 
 axios.defaults.withCredentials = true
+
+const { TabPane } = Tabs
+
+const { Option } = Select
 
 const Terminals = () => {
   const user = authRequired({})
@@ -372,136 +378,254 @@ const Terminals = () => {
               </Col>
             </Row>
           )}
-          {!editingRecord && (
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  label="Терминал ид"
-                  name="terminal_id"
-                  rules={[
-                    { required: true, message: 'Просьба ввести ид терминала' },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-            </Row>
-          )}
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="active"
-                label="Активность"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="delivery_type" label="Тип">
-                <Radio.Group buttonStyle="solid">
-                  <Radio.Button value="all">Все</Radio.Button>
-                  <Radio.Button value="deliver">Доставка</Radio.Button>
-                  <Radio.Button value="pickup">Самовывоз</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="name"
-                label="Название"
-                rules={[{ required: true, message: 'Просьба ввести название' }]}
-              >
-                <Input placeholder="Просьба ввести название" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="desc" label="Описание">
-                <Input.TextArea />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="name_uz" label="Название (уз.)">
-                <Input placeholder="Просьба ввести название" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="desc_uz" label="Описание (уз.)">
-                <Input.TextArea />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="name_en" label="Название (анг.)">
-                <Input placeholder="Просьба ввести название" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="desc_en" label="Описание (анг.)">
-                <Input.TextArea />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="delivery_time" label="Время доставки">
-                <TimePicker format={format} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="pickup_time" label="Время самовывоза">
-                <TimePicker format={format} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="latitude" label="Широта">
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="longitude" label="Долгота">
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="open_work" label="Время открытия (ПН-СБ)">
-                <TimePicker format={format} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="close_work" label="Время закрытия (ПН-СБ)">
-                <TimePicker format={format} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="open_weekend" label="Время открытия (ВС)">
-                <TimePicker format={format} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="close_weekend" label="Время закрытия (ВС)">
-                <TimePicker format={format} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="tg_group" label="Группа в телеграм">
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
+          <Tabs type="card">
+            <TabPane tab="Общие" key="1">
+              {!editingRecord && (
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Терминал ид"
+                      name="terminal_id"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Просьба ввести ид терминала',
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="active"
+                    label="Активность"
+                    valuePropName="checked"
+                  >
+                    <Switch />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="delivery_type" label="Тип">
+                    <Radio.Group buttonStyle="solid">
+                      <Radio.Button value="all">Все</Radio.Button>
+                      <Radio.Button value="deliver">Доставка</Radio.Button>
+                      <Radio.Button value="pickup">Самовывоз</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="name"
+                    label="Название"
+                    rules={[
+                      { required: true, message: 'Просьба ввести название' },
+                    ]}
+                  >
+                    <Input placeholder="Просьба ввести название" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="desc" label="Описание">
+                    <Input.TextArea />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="name_uz" label="Название (уз.)">
+                    <Input placeholder="Просьба ввести название" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="desc_uz" label="Описание (уз.)">
+                    <Input.TextArea />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="name_en" label="Название (анг.)">
+                    <Input placeholder="Просьба ввести название" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="desc_en" label="Описание (анг.)">
+                    <Input.TextArea />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="delivery_time" label="Время доставки">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="pickup_time" label="Время самовывоза">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="latitude" label="Широта">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="longitude" label="Долгота">
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="open_work" label="Время открытия (ПН-СБ)">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="close_work" label="Время закрытия (ПН-СБ)">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="open_weekend" label="Время открытия (ВС)">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="close_weekend" label="Время закрытия (ВС)">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="tg_group" label="Группа в телеграм">
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </TabPane>
+            {editingRecord && (
+              <TabPane tab="Способы оплаты" key="2">
+                <Divider orientation="left">Payme</Divider>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="payme_active"
+                      label="Активность"
+                      valuePropName="checked"
+                    >
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="payme_test_mode"
+                      label="Тестовый режим"
+                      valuePropName="checked"
+                    >
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="payme_merchant_id"
+                      label="Идентификатор мерчанта"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="payme_secure_key" label="Секретный ключ">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="payme_secure_key_test"
+                      label="Секретный ключ для тестов"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="payme_print"
+                      label="Добавить в чек данные о товарах"
+                    >
+                      <Select>
+                        <Option value="no">Нет</Option>
+                        <Option value="yes">Да</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Divider orientation="left">Click</Divider>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="click_active"
+                      label="Активность"
+                      valuePropName="checked"
+                    >
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="click_merchant_service_id"
+                      label="Идентификатор услуг"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="click_merchant_user_id"
+                      label="Идентификатор пользователя в системе поставщиков"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="click_secret_key"
+                      label="Секретный ключ магаина"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="click_merchant_id"
+                      label="Идентификатор поставщика"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </TabPane>
+            )}
+          </Tabs>
         </Form>
       </Drawer>
       <Table
