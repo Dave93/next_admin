@@ -324,7 +324,7 @@ const Terminals = () => {
   ]
 
   return (
-    <MainLayout title="Terminals">
+    <MainLayout title="Терминалы">
       <div className="flex justify-between mb-3">
         <Input.Search
           loading={isLoading}

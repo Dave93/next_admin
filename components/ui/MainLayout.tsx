@@ -77,6 +77,17 @@ export default function MainLayout({
               <Link href="/">Главная</Link>
             </Menu.Item>
             <Menu.Item
+              key="/cities"
+              icon={
+                <LocationMarkerIcon
+                  className="h-[16px] w-[16px]"
+                  aria-hidden="true"
+                />
+              }
+            >
+              <Link href="/cities">Города</Link>
+            </Menu.Item>
+            <Menu.Item
               key="/terminals"
               icon={
                 <LocationMarkerIcon
