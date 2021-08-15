@@ -420,7 +420,9 @@ const Cities = () => {
                     <Select>
                       <Option value="">Выберите вариант</Option>
                       {cities.map((item: any) => (
-                        <Option value={item.id}>{item.name}</Option>
+                        <Option value={item.id} key={item.id}>
+                          {item.name}
+                        </Option>
                       ))}
                     </Select>
                   </Form.Item>
