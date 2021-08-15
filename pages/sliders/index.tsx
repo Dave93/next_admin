@@ -25,6 +25,7 @@ import {
   SearchOutlined,
   EditOutlined,
   InboxOutlined,
+  CloseOutlined,
 } from '@ant-design/icons'
 import getConfig from 'next/config'
 import React, { useState, useRef, useEffect } from 'react'
@@ -32,7 +33,6 @@ import axios from 'axios'
 import { useDarkMode } from 'next-dark-mode'
 import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
-import LoadingScreen from '@components/ui/LoadingScreen'
 import Cookies from 'js-cookie'
 import moment from 'moment'
 import Hashids from 'hashids'
@@ -45,6 +45,7 @@ import {
   UploadRequestHeader,
   UploadRequestMethod,
 } from 'rc-upload/lib/interface'
+import Image from 'next/image'
 
 const { publicRuntimeConfig } = getConfig()
 let webAddress = publicRuntimeConfig.apiUrl
@@ -146,6 +147,21 @@ const Cities = () => {
   const [isShowUploader, setShowUploader] = useState(false)
 
   let searchInput = useRef(null)
+
+  const deleteAsset = async (assetId: number) => {
+    setAxiosCredentials()
+
+    await axios.post(`${webAddress}/api/assets/unlink`, {
+      assetId,
+    })
+
+    setEditingRecord([
+      {
+        ...editingRecord,
+        asset: editingRecord.asset.filter((asset: any) => asset.id != assetId),
+      },
+    ])
+  }
 
   const showDrawer = () => {
     setDrawer(true)
@@ -413,7 +429,7 @@ const Cities = () => {
               {editingRecord && (
                 <Row>
                   <Col span={24}>
-                    {isShowUploader ? (
+                    <div>
                       <Dragger {...dropProps}>
                         <div>
                           <p className="ant-upload-drag-icon">
@@ -425,9 +441,30 @@ const Cities = () => {
                           </p>
                         </div>
                       </Dragger>
-                    ) : (
-                      <div>
-                        {/* {selectedProducts[0].asset && (
+                    </div>
+                    <div className="flex mt-4">
+                      {editingRecord &&
+                        editingRecord?.asset?.map((item: any) => (
+                          <div className="relative w-28" key={item.id}>
+                            <Image
+                              src={item.link}
+                              width="100"
+                              height="100"
+                              layout="intrinsic"
+                            />
+                            <div className="absolute top-0 right-0">
+                              <Button
+                                size="small"
+                                icon={<CloseOutlined />}
+                                danger
+                                shape="circle"
+                                type="primary"
+                                onClick={() => deleteAsset(item.id)}
+                              ></Button>
+                            </div>
+                          </div>
+                        ))}
+                      {/* {selectedProducts[0].asset && (
                           <div className="relative w-28">
                             <Image
                               src={selectedProducts[0].asset.link}
@@ -448,8 +485,7 @@ const Cities = () => {
                             </div>
                           </div>
                         )} */}
-                      </div>
-                    )}
+                    </div>
                   </Col>
                 </Row>
               )}
