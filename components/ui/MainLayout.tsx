@@ -7,6 +7,7 @@ import {
   SettingOutlined,
   AppstoreOutlined,
   MenuOutlined,
+  FileImageOutlined,
 } from '@ant-design/icons'
 import Head from 'next/head'
 import { LocationMarkerIcon } from '@heroicons/react/outline'
@@ -86,6 +87,17 @@ export default function MainLayout({
               }
             >
               <Link href="/cities">Города</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="/sliders"
+              icon={
+                <FileImageOutlined
+                  className="h-[16px] w-[16px]"
+                  aria-hidden="true"
+                />
+              }
+            >
+              <Link href="/sliders">Слайдеры</Link>
             </Menu.Item>
             <Menu.Item
               key="/terminals"
