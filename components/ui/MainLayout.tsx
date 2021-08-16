@@ -5,7 +5,7 @@ import {
   HomeOutlined,
   DownOutlined,
   SettingOutlined,
-  AppstoreOutlined,
+  UnorderedListOutlined,
   MenuOutlined,
   FileImageOutlined,
 } from '@ant-design/icons'
@@ -98,6 +98,17 @@ export default function MainLayout({
               }
             >
               <Link href="/sliders">Слайдеры</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="/news"
+              icon={
+                <UnorderedListOutlined
+                  className="h-[16px] w-[16px]"
+                  aria-hidden="true"
+                />
+              }
+            >
+              <Link href="/news">Новости</Link>
             </Menu.Item>
             <Menu.Item
               key="/terminals"
