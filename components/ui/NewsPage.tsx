@@ -60,6 +60,7 @@ const { TabPane } = Tabs
 
 const { Option } = Select
 const { Dragger } = Upload
+const { TextArea } = Input
 
 const News = () => {
   const user = authRequired({})
@@ -427,26 +428,14 @@ const News = () => {
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="description" label="Описание(RU)">
-                    <ReactQuill
-                      theme="snow"
-                      value={ruDescriptionEditorState || ''}
-                      onChange={(content: string) => {
-                        setRuDescriptionEditorState(content)
-                      }}
-                    />
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="description_uz" label="Описание(UZ)">
-                    <ReactQuill
-                      theme="snow"
-                      value={uzDescriptionEditorState || ''}
-                      onChange={(content: string) => {
-                        setUzDescriptionEditorState(content)
-                      }}
-                    />
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
               </Row>

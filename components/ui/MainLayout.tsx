@@ -111,6 +111,17 @@ export default function MainLayout({
               <Link href="/news">Новости</Link>
             </Menu.Item>
             <Menu.Item
+              key="/sale"
+              icon={
+                <UnorderedListOutlined
+                  className="h-[16px] w-[16px]"
+                  aria-hidden="true"
+                />
+              }
+            >
+              <Link href="/sale">Акции</Link>
+            </Menu.Item>
+            <Menu.Item
               key="/terminals"
               icon={
                 <LocationMarkerIcon
