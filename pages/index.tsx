@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <MainLayout title="Home">
       <iframe
-        src="http://kb.hq.fungeek.net/goto/2350d6eae528bbb6346387c6c0a875fb"
+        src="https://kb.hq.fungeek.net/goto/2350d6eae528bbb6346387c6c0a875fb"
         height="1000"
         width="100%"
       ></iframe>
