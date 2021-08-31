@@ -239,6 +239,7 @@ const CatalogPage = function () {
       name_uz: name.uz,
       custom_name: selectedVariant.custom_name,
       custom_name_uz: selectedVariant.custom_name_uz,
+      active: true,
     })
     setVariantDrawer(true)
   }
@@ -357,6 +358,7 @@ const CatalogPage = function () {
 
     await axios.put(`${webAddress}/api/products/${selectedVariant.id}`, {
       ...values,
+      active: true,
     })
 
     setIsVariantSubmittingForm(false)
