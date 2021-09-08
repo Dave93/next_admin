@@ -150,6 +150,9 @@ export default function MainLayout({
             <Menu.Item key="/catalog" icon={<MenuOutlined />}>
               <Link href="/catalog">Каталог</Link>
             </Menu.Item>
+            <Menu.Item key="/modifiers" icon={<MenuOutlined />}>
+              <Link href="/modifiers">Модификаторы</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
         <Layout>
