@@ -567,7 +567,7 @@ const CatalogPage = function () {
             </Col>
             <Col span={12}>
               <Form.Item name="half_mode" valuePropName="checked">
-                <Checkbox>Режим "50/50"</Checkbox>
+                <Checkbox>Режим &quot;50/50&quot;</Checkbox>
               </Form.Item>
             </Col>
           </Row>
