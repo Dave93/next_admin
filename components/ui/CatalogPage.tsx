@@ -319,6 +319,7 @@ const CatalogPage = function () {
       await axios.put(`${webAddress}/api/categories/${editingCategory?.id}`, {
         ...values,
         active: values.active ? '1' : '0',
+        half_mode: values.half_mode ? '1' : '0',
       })
     }
     setIsSubmittingForm(false)
@@ -562,6 +563,11 @@ const CatalogPage = function () {
             <Col span={12}>
               <Form.Item name="active" valuePropName="checked">
                 <Checkbox>Активность</Checkbox>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="half_mode" valuePropName="checked">
+                <Checkbox>Режим "50/50"</Checkbox>
               </Form.Item>
             </Col>
           </Row>
