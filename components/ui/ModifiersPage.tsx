@@ -283,6 +283,14 @@ const Modifiers = () => {
       },
     },
     {
+      title: 'Заголовок(UZ)',
+      dataIndex: 'name_uz',
+      key: 'name_uz',
+      sorter: {
+        compare: (a: any, b: any) => a.name_uz - b.name_uz,
+      },
+    },
+    {
       title: 'Цена',
       dataIndex: 'price',
       key: 'price',
@@ -349,49 +357,75 @@ const Modifiers = () => {
           initialValues={editingRecord ? editingRecord : undefined}
         >
           {editingRecord && (
-            <Row>
-              <Col span={24}>
-                {isShowUploader ? (
-                  <div>
-                    <Dragger {...dropProps}>
-                      <div>
-                        <p className="ant-upload-drag-icon">
-                          <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">
-                          Нажмите или перетащите файл в эту область, чтобы
-                          загрузить
-                        </p>
-                      </div>
-                    </Dragger>
-                  </div>
-                ) : (
-                  <div className="flex mt-4">
-                    {editingRecord &&
-                      editingRecord?.asset?.map((item: any) => (
-                        <div className="relative w-28" key={item.id}>
-                          <Image
-                            src={item.link}
-                            width="100"
-                            height="100"
-                            layout="intrinsic"
-                          />
-                          <div className="absolute top-0 right-0">
-                            <Button
-                              size="small"
-                              icon={<CloseOutlined />}
-                              danger
-                              shape="circle"
-                              type="primary"
-                              onClick={() => deleteAsset(item.id)}
-                            ></Button>
-                          </div>
+            <div>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="name"
+                    label="Название"
+                    rules={[
+                      { required: true, message: 'Просьба ввести название' },
+                    ]}
+                  >
+                    <Input placeholder="Просьба ввести название" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="name_uz"
+                    label="Название(UZ)"
+                    rules={[
+                      { required: true, message: 'Просьба ввести название' },
+                    ]}
+                  >
+                    <Input placeholder="Просьба ввести название" />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={24}>
+                  {isShowUploader ? (
+                    <div>
+                      <Dragger {...dropProps}>
+                        <div>
+                          <p className="ant-upload-drag-icon">
+                            <InboxOutlined />
+                          </p>
+                          <p className="ant-upload-text">
+                            Нажмите или перетащите файл в эту область, чтобы
+                            загрузить
+                          </p>
                         </div>
-                      ))}
-                  </div>
-                )}
-              </Col>
-            </Row>
+                      </Dragger>
+                    </div>
+                  ) : (
+                    <div className="flex mt-4">
+                      {editingRecord &&
+                        editingRecord?.asset?.map((item: any) => (
+                          <div className="relative w-28" key={item.id}>
+                            <Image
+                              src={item.link}
+                              width="100"
+                              height="100"
+                              layout="intrinsic"
+                            />
+                            <div className="absolute top-0 right-0">
+                              <Button
+                                size="small"
+                                icon={<CloseOutlined />}
+                                danger
+                                shape="circle"
+                                type="primary"
+                                onClick={() => deleteAsset(item.id)}
+                              ></Button>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </Col>
+              </Row>
+            </div>
           )}
         </Form>
       </Drawer>
