@@ -686,7 +686,7 @@ const CatalogPage = function () {
               >
                 <Select showSearch placeholder="Выберите товар">
                   {modifierProductList.map((prod: any) => (
-                    <Option value={prod.id}>
+                    <Option value={prod.id} key={prod.id}>
                       {prod.attribute_data['name'][channelName]['ru']}
                     </Option>
                   ))}
