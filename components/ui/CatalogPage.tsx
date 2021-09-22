@@ -13,6 +13,7 @@ import {
   Tree,
   Upload,
   message,
+  Select,
 } from 'antd'
 import {
   PlusOutlined,
@@ -54,6 +55,7 @@ let webAddress = publicRuntimeConfig.apiUrl
 axios.defaults.withCredentials = true
 
 const { Dragger } = Upload
+const { Option } = Select
 
 async function asyncForEach(array: any[], callback: Function) {
   for (let index = 0; index < array.length; index++) {
@@ -107,8 +109,7 @@ const CatalogPage = function () {
         method: UploadRequestMethod
       } = options
       // console.log(arguments)
-      setAxiosCredentials()
-      console.log(selectedProducts[0])
+      await setAxiosCredentials()
       var formData = new FormData()
       formData.append('file', file)
       formData.append('parent', 'products')
@@ -191,6 +192,8 @@ const CatalogPage = function () {
   const [ruDescriptionEditorState, setRuDescriptionEditorState] = useState('')
   const [uzDescriptionEditorState, setUzDescriptionEditorState] = useState('')
 
+  const [modifierProductList, setModifierProductList] = useState([] as any[])
+
   // Forms
   const [form] = Form.useForm()
   const [mergeForm] = Form.useForm()
@@ -240,6 +243,7 @@ const CatalogPage = function () {
       custom_name: selectedVariant.custom_name,
       custom_name_uz: selectedVariant.custom_name_uz,
       active: true,
+      modifier_prod_id: selectedVariant.modifier_prod_id,
     })
     setVariantDrawer(true)
   }
@@ -269,6 +273,11 @@ const CatalogPage = function () {
     } = await axios.get(`${webAddress}/api/categories?mode=tree`)
     setChannelName(channelData.name)
     setData(result)
+
+    const {
+      data: { data: prodList },
+    } = await axios.get(`${webAddress}/api/products`)
+    setModifierProductList(prodList)
   }
 
   const fetchProducts = async (selectedId: number = 0) => {
@@ -293,8 +302,25 @@ const CatalogPage = function () {
     setIsVariantsLoading(false)
   }
 
-  const setAxiosCredentials = () => {
-    const csrf = Cookies.get('X-XSRF-TOKEN')
+  const setAxiosCredentials = async () => {
+    let csrf = Cookies.get('X-XSRF-TOKEN')
+    if (!csrf) {
+      const csrfReq = await axios(`${webAddress}/api/keldi`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          crossDomain: true,
+        },
+        withCredentials: true,
+      })
+      let { data: res } = csrfReq
+      csrf = Buffer.from(res.result, 'base64').toString('ascii')
+
+      var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
+      Cookies.set('X-XSRF-TOKEN', csrf, {
+        expires: inTenMinutes,
+      })
+    }
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
     axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
@@ -314,7 +340,7 @@ const CatalogPage = function () {
 
   const onCategoryFinish = async (values: any) => {
     setIsSubmittingForm(true)
-    setAxiosCredentials()
+    await setAxiosCredentials()
     if (editingCategory) {
       await axios.put(`${webAddress}/api/categories/${editingCategory?.id}`, {
         ...values,
@@ -329,7 +355,7 @@ const CatalogPage = function () {
 
   const onProductsFinish = async (values: any) => {
     setIsMergeSubmittingForm(true)
-    setAxiosCredentials()
+    await setAxiosCredentials()
 
     if (selectedProducts.length == 1) {
       await axios.put(`${webAddress}/api/products/${selectedProducts[0].id}`, {
@@ -355,7 +381,7 @@ const CatalogPage = function () {
 
   const onVariantFinish = async (values: any) => {
     setIsVariantSubmittingForm(true)
-    setAxiosCredentials()
+    await setAxiosCredentials()
 
     await axios.put(`${webAddress}/api/products/${selectedVariant.id}`, {
       ...values,
@@ -373,7 +399,7 @@ const CatalogPage = function () {
   }
 
   const deleteAsset = async (assetId: number) => {
-    setAxiosCredentials()
+    await setAxiosCredentials()
 
     await axios.post(`${webAddress}/api/products/unlink_asset`, {
       assetId,
@@ -649,6 +675,22 @@ const CatalogPage = function () {
                 ]}
               >
                 <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="modifier_prod_id"
+                label="Товар для сосисочного борта"
+              >
+                <Select showSearch placeholder="Выберите товар">
+                  {modifierProductList.map((prod: any) => (
+                    <Option value={prod.id}>
+                      {prod.attribute_data['name'][channelName]['ru']}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
