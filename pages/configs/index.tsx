@@ -92,8 +92,25 @@ const Configs = () => {
   }
   const [form] = Form.useForm()
 
-  const setAxiosCredentials = () => {
-    const csrf = Cookies.get('X-XSRF-TOKEN')
+  const setAxiosCredentials = async () => {
+    let csrf = Cookies.get('X-XSRF-TOKEN')
+    if (!csrf) {
+      const csrfReq = await axios(`${webAddress}/api/keldi`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          crossDomain: true,
+        },
+        withCredentials: true,
+      })
+      let { data: res } = csrfReq
+      csrf = Buffer.from(res.result, 'base64').toString('ascii')
+
+      var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
+      Cookies.set('X-XSRF-TOKEN', csrf, {
+        expires: inTenMinutes,
+      })
+    }
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
     axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
@@ -101,7 +118,7 @@ const Configs = () => {
 
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
-    setAxiosCredentials()
+    await setAxiosCredentials()
     if (editingRecord) {
       await axios.put(`${webAddress}/api/configs/${editingRecord?.id}`, {
         ...editingRecord,
