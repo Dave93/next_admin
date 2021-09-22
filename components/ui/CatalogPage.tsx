@@ -684,7 +684,11 @@ const CatalogPage = function () {
                 name="modifier_prod_id"
                 label="Товар для сосисочного борта"
               >
-                <Select showSearch placeholder="Выберите товар">
+                <Select
+                  showSearch
+                  placeholder="Выберите товар"
+                  optionFilterProp="children"
+                >
                   {modifierProductList.map((prod: any) => (
                     <Option value={prod.id} key={prod.id}>
                       {prod.attribute_data['name'][channelName]['ru']}
