@@ -234,6 +234,11 @@ const Cities = () => {
       dataIndex: 'map_zoom',
       key: 'map_zoom',
     },
+    {
+      title: 'Телефон',
+      dataIndex: 'phone',
+      key: 'phone',
+    },
   ]
 
   return (
@@ -338,6 +343,11 @@ const Cities = () => {
                 <Col span={12}>
                   <Form.Item name="map_zoom" label="Масштаб карты">
                     <InputNumber />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="phone" label="Телефон">
+                    <Input placeholder="Просьба ввести телефон" />
                   </Form.Item>
                 </Col>
               </Row>
