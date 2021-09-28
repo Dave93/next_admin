@@ -52,6 +52,7 @@ const Terminals = () => {
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [cities, setCities] = useState([] as any)
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -183,8 +184,16 @@ const Terminals = () => {
     setIsLoading(false)
   }
 
+  const fetchCities = async () => {
+    const {
+      data: { data: result },
+    } = await axios.get(`${webAddress}/api/cities`)
+    setCities(result)
+  }
+
   useEffect(() => {
     fetchData()
+    fetchCities()
   }, [])
 
   const columns = [
@@ -432,6 +441,20 @@ const Terminals = () => {
                       <Radio.Button value="deliver">Доставка</Radio.Button>
                       <Radio.Button value="pickup">Самовывоз</Radio.Button>
                     </Radio.Group>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="city_id" label="Город">
+                    <Select>
+                      <Option value="">Выберите вариант</Option>
+                      {cities.map((item: any) => (
+                        <Option value={item.id} key={item.id}>
+                          {item.name}
+                        </Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                 </Col>
               </Row>

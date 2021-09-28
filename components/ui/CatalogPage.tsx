@@ -114,6 +114,7 @@ const CatalogPage = function () {
       formData.append('file', file)
       formData.append('parent', 'products')
       formData.append('primary', 'true')
+      console.log(selectedProducts[0].id)
       const hashids = new Hashids(
         'product',
         8,
