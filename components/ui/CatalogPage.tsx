@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import currency from 'currency.js'
 import {
   Drawer,
   Form,
@@ -490,11 +491,13 @@ const CatalogPage = function () {
       render: (_: any, record: any) => {
         return (
           <div>
-            {new Intl.NumberFormat('uz', {
-              style: 'currency',
-              currency: 'UZS',
-              maximumFractionDigits: 0,
-            }).format(record?.price)}
+            {currency(record?.price, {
+              pattern: '# !',
+              separator: ' ',
+              decimal: '.',
+              symbol: `сум`,
+              precision: 0,
+            }).format()}
           </div>
         )
       },
@@ -509,11 +512,13 @@ const CatalogPage = function () {
         key: 'price',
         render: (_: any, rec: any) => (
           <span>
-            {new Intl.NumberFormat('uz', {
-              style: 'currency',
-              currency: 'UZS',
-              maximumFractionDigits: 0,
-            }).format(rec?.price)}
+            {currency(rec?.price, {
+              pattern: '# !',
+              separator: ' ',
+              decimal: '.',
+              symbol: `сум`,
+              precision: 0,
+            }).format()}
           </span>
         ),
       },

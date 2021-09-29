@@ -13,6 +13,7 @@
     "@types/react-draft-wysiwyg": "^1.13.3",
     "antd": "^4.16.5",
     "axios": "^0.21.1",
+    "currency.js": "^2.0.4",
     "express": "^4.17.1",
     "hashids": "^2.2.8",
     "js-cookie": "^2.2.1",

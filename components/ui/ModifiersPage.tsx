@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import currency from 'currency.js'
 import {
   Drawer,
   Form,
@@ -297,11 +298,13 @@ const Modifiers = () => {
       render: (_: any, record: any) => {
         return (
           <div>
-            {new Intl.NumberFormat('uz', {
-              style: 'currency',
-              currency: 'UZS',
-              maximumFractionDigits: 0,
-            }).format(record?.price)}
+            {currency(record?.price, {
+              pattern: '# !',
+              separator: ' ',
+              decimal: '.',
+              symbol: `сум`,
+              precision: 0,
+            }).format()}
           </div>
         )
       },
