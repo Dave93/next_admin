@@ -335,6 +335,21 @@ const Cities = () => {
       dataIndex: 'description',
       key: 'description',
     },
+    {
+      title: 'Язык сайта',
+      dataIndex: 'local',
+      key: 'locale',
+      render: (_: any, record: any) => {
+        let res = ''
+        if (record.locale == 'ru') {
+          res = 'Русский'
+        }
+        if (record.locale == 'uz') {
+          res = 'Узбекский'
+        }
+        return res
+      },
+    },
   ]
 
   return (
@@ -396,7 +411,13 @@ const Cities = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item name="sort" label="Сортировка">
+                  <Form.Item
+                    name="sort"
+                    label="Сортировка"
+                    rules={[
+                      { required: true, message: 'Просьба указать сортировку' },
+                    ]}
+                  >
                     <InputNumber />
                   </Form.Item>
                 </Col>
@@ -441,6 +462,15 @@ const Cities = () => {
                           {item.name}
                         </Option>
                       ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="locale" label="Язык сайта">
+                    <Select>
+                      <Option value="">Выберите вариант</Option>
+                      <Option value="ru">Русский</Option>
+                      <Option value="uz">Узбекский</Option>
                     </Select>
                   </Form.Item>
                 </Col>
