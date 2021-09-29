@@ -231,6 +231,7 @@ const CatalogPage = function () {
       name_uz: name.uz,
       description_ru,
       description_uz,
+      active: !!prod.active,
     })
     setMergeDrawerVisible(true)
   }
