@@ -247,6 +247,7 @@ const CatalogPage = function () {
       custom_name_uz: selectedVariant.custom_name_uz,
       active: true,
       modifier_prod_id: selectedVariant.modifier_prod_id,
+      box_id: selectedVariant.box_id,
     })
     setVariantDrawer(true)
   }
@@ -691,6 +692,21 @@ const CatalogPage = function () {
                 name="modifier_prod_id"
                 label="Товар для сосисочного борта"
               >
+                <Select
+                  showSearch
+                  placeholder="Выберите товар"
+                  optionFilterProp="children"
+                >
+                  {modifierProductList.map((prod: any) => (
+                    <Option value={prod.id} key={prod.id}>
+                      {prod.attribute_data['name'][channelName]['ru']}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="box_id" label="Выберите коробку">
                 <Select
                   showSearch
                   placeholder="Выберите товар"
