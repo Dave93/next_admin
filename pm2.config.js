@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'hq_admin',
+      name: process.env.PM2_APP_NAME,
       script: './server.js',
       watch: true,
       env: {
@@ -9,7 +9,7 @@ module.exports = {
         NODE_ENV: 'development',
       },
       env_production: {
-        PORT: 4545,
+        PORT: process.env.NODE_PORT,
         NODE_ENV: 'production',
       },
     },

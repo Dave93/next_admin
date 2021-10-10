@@ -1,4 +1,4 @@
-console.log(process.env.API_URL);
+console.log(process.env.API_URL)
 module.exports = {
   reactStrictMode: true,
   publicRuntimeConfig: {
@@ -25,6 +25,7 @@ module.exports = {
       'store.hq.fungeek.net',
       'api.hq.fungeek.net',
       'admin.choparpizza.uz',
+      'api.choparpizza.uz',
     ],
   },
 }

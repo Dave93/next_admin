@@ -7,9 +7,12 @@ import { useRouter } from 'next/router'
 import { Input, Form } from 'antd'
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import getConfig from 'next/config'
 import { useUI } from '@components/ui/context'
 
 axios.defaults.withCredentials = true
+const { publicRuntimeConfig } = getConfig()
+let webAddress = publicRuntimeConfig.apiUrl
 
 interface Errors {
   [key: string]: string
@@ -71,7 +74,7 @@ export default function Login() {
   const sendOtpCode = async () => {
     setIsLoadingOtpSend(true)
     setSubmitError('')
-    const csrfReq = await axios('https://api.hq.fungeek.net/api/keldi', {
+    const csrfReq = await axios(`${webAddress}/api/keldi`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -87,7 +90,7 @@ export default function Login() {
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
     axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
     let ress = await axios.post(
-      'https://api.hq.fungeek.net/api/send_otp',
+      `${webAddress}/api/send_otp`,
       {
         phone: '+998' + phoneValue,
       },
@@ -136,7 +139,7 @@ export default function Login() {
     setSubmitError('')
     const otpToken = Cookies.get('opt_token')
     let ress = await axios.post(
-      'https://api.hq.fungeek.net/api/auth_otp',
+      `${webAddress}/api/auth_otp`,
       {
         phone: '+998' + phoneValue,
         code: passwordValue,
