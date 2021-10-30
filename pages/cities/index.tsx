@@ -351,6 +351,13 @@ const Cities = () => {
                   </Form.Item>
                 </Col>
               </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="bounds" label="Границы поиска">
+                    <Input placeholder="Просьба границы поиска" />
+                  </Form.Item>
+                </Col>
+              </Row>
             </TabPane>
           </Tabs>
         </Form>
