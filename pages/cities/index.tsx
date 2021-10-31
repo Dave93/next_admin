@@ -357,6 +357,11 @@ const Cities = () => {
                     <Input placeholder="Просьба границы поиска" />
                   </Form.Item>
                 </Col>
+                <Col span={12}>
+                  <Form.Item name="polygons" label="Разметка города">
+                    <Input placeholder="Просьба разметку города" />
+                  </Form.Item>
+                </Col>
               </Row>
             </TabPane>
           </Tabs>
