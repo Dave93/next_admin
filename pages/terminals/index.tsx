@@ -240,14 +240,14 @@ const Terminals = () => {
             compare: (a: any, b: any) => a.name - b.name,
           },
         },
-        {
-          title: 'Описание',
-          dataIndex: 'desc',
-          key: 'desc',
-          sorter: {
-            compare: (a: any, b: any) => a.desc - b.desc,
-          },
-        },
+        // {
+        //   title: 'Описание',
+        //   dataIndex: 'desc',
+        //   key: 'desc',
+        //   sorter: {
+        //     compare: (a: any, b: any) => a.desc - b.desc,
+        //   },
+        // },
       ],
     },
     {
@@ -261,14 +261,14 @@ const Terminals = () => {
             compare: (a: any, b: any) => a.name_uz - b.name_uz,
           },
         },
-        {
-          title: 'Описание',
-          dataIndex: 'desc_uz',
-          key: 'desc_uz',
-          sorter: {
-            compare: (a: any, b: any) => a.desc_uz - b.desc_uz,
-          },
-        },
+        // {
+        //   title: 'Описание',
+        //   dataIndex: 'desc_uz',
+        //   key: 'desc_uz',
+        //   sorter: {
+        //     compare: (a: any, b: any) => a.desc_uz - b.desc_uz,
+        //   },
+        // },
       ],
     },
     {
@@ -282,14 +282,14 @@ const Terminals = () => {
             compare: (a: any, b: any) => a.name_en - b.name_en,
           },
         },
-        {
-          title: 'Описание',
-          dataIndex: 'desc_en',
-          key: 'desc_en',
-          sorter: {
-            compare: (a: any, b: any) => a.desc_en - b.desc_en,
-          },
-        },
+        // {
+        //   title: 'Описание',
+        //   dataIndex: 'desc_en',
+        //   key: 'desc_en',
+        //   sorter: {
+        //     compare: (a: any, b: any) => a.desc_en - b.desc_en,
+        //   },
+        // },
       ],
     },
     {
@@ -675,6 +675,9 @@ const Terminals = () => {
         rowKey="id"
         scroll={{ x: 'calc(700px + 50%)' }}
         size="small"
+        pagination={{
+          pageSize: 100,
+        }}
         bordered
       />
     </MainLayout>
