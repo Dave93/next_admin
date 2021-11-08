@@ -434,9 +434,7 @@ const News = () => {
                   <Form.Item
                     name="name_uz"
                     label="Название(UZ)"
-                    rules={[
-                      { required: true, message: 'Просьба ввести название' },
-                    ]}
+                    rules={[{ message: 'Просьба ввести название' }]}
                   >
                     <Input placeholder="Просьба ввести название" />
                   </Form.Item>
@@ -466,6 +464,15 @@ const News = () => {
                           {item.name}
                         </Option>
                       ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="locale" label="Язык сайта">
+                    <Select>
+                      <Option value="">Выберите вариант</Option>
+                      <Option value="ru">Русский</Option>
+                      <Option value="uz">Узбекский</Option>
                     </Select>
                   </Form.Item>
                 </Col>
