@@ -96,6 +96,10 @@ const Terminals = () => {
       formData.close_weekend = moment(formData.close_weekend)
     }
 
+    if (formData.services) {
+      formData.services = formData.services.split(',')
+    }
+
     form.setFieldsValue(formData)
     setDrawer(true)
   }
@@ -150,6 +154,9 @@ const Terminals = () => {
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
     await setAxiosCredentials()
+    if (values.services) {
+      values.services = values.services.join(',')
+    }
     if (editingRecord) {
       await axios.put(`${webAddress}/api/terminals/${editingRecord?.id}`, {
         ...editingRecord,
@@ -497,6 +504,23 @@ const Terminals = () => {
                 <Col span={12}>
                   <Form.Item name="desc_en" label="Описание (анг.)">
                     <Input.TextArea />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="near" label="Ориентир">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="services" label="Удобства">
+                    <Select mode="multiple">
+                      <Option value="parking">Парковка</Option>
+                      <Option value="playground">Детская площадка</Option>
+                      <Option value="delivery">Доставка</Option>
+                      <Option value="internet">Wi-Fi</Option>
+                    </Select>
                   </Form.Item>
                 </Col>
               </Row>
