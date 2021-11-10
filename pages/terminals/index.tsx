@@ -478,7 +478,7 @@ const Terminals = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item name="desc" label="Описание">
+                  <Form.Item name="desc" label="Адрес">
                     <Input.TextArea />
                   </Form.Item>
                 </Col>
@@ -490,7 +490,7 @@ const Terminals = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item name="desc_uz" label="Описание (уз.)">
+                  <Form.Item name="desc_uz" label="Адрес (уз.)">
                     <Input.TextArea />
                   </Form.Item>
                 </Col>
@@ -513,6 +513,13 @@ const Terminals = () => {
                     <Input />
                   </Form.Item>
                 </Col>
+                <Col span={12}>
+                  <Form.Item name="near_uz" label="Ориентир (уз.)">
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item name="services" label="Удобства">
                     <Select mode="multiple">
