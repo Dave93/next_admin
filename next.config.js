@@ -26,6 +26,8 @@ module.exports = {
       'api.hq.fungeek.net',
       'admin.choparpizza.uz',
       'api.choparpizza.uz',
+      'api.lesailes.uz',
+      'admin.lesailes.uz',
     ],
   },
 }
