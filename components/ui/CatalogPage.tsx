@@ -15,6 +15,7 @@ import {
   Upload,
   message,
   Select,
+  InputNumber,
 } from 'antd'
 import {
   PlusOutlined,
@@ -209,6 +210,8 @@ const CatalogPage = function () {
       name_ru: name.ru,
       name_uz: name.uz,
       active: !!selectedCategory.active,
+      sort: selectedCategory.sort,
+      order: selectedCategory.order,
     })
     setDrawer(true)
   }
@@ -602,6 +605,13 @@ const CatalogPage = function () {
             <Col span={12}>
               <Form.Item name="half_mode" valuePropName="checked">
                 <Checkbox>Режим &quot;50/50&quot;</Checkbox>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="order" label="Сортировка">
+                <InputNumber />
               </Form.Item>
             </Col>
           </Row>
