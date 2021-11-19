@@ -798,6 +798,23 @@ const CatalogPage = function () {
               </Col>
             </Row>
           )}
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="box_id" label="Выберите коробку">
+                <Select
+                  showSearch
+                  placeholder="Выберите товар"
+                  optionFilterProp="children"
+                >
+                  {modifierProductList.map((prod: any) => (
+                    <Option value={prod.id} key={prod.id}>
+                      {prod.attribute_data['name'][channelName]['ru']}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
           {!isMergingMode && selectedProducts[0] && (
             <Row>
               <Col span={24}>
