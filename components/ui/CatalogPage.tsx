@@ -580,10 +580,12 @@ const CatalogPage = function () {
         >
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Код">
-                <span>
-                  {selectedCategory?.attribute_data?.name[channelName].ru}
-                </span>
+              <Form.Item
+                name="name_ru"
+                label="Название"
+                rules={[{ required: true, message: 'Просьба ввести название' }]}
+              >
+                <Input placeholder="Просьба ввести название" />
               </Form.Item>
             </Col>
             <Col span={12}>
