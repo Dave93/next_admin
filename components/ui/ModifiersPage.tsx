@@ -276,6 +276,14 @@ const Modifiers = () => {
       },
     },
     {
+      title: 'Активность',
+      dataIndex: 'active',
+      key: 'active',
+      render: (_: any) => {
+        return <Switch disabled defaultChecked={_} />
+      },
+    },
+    {
       title: 'Заголовок',
       dataIndex: 'name',
       key: 'name',
@@ -361,6 +369,17 @@ const Modifiers = () => {
         >
           {editingRecord && (
             <div>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="active"
+                    label="Активность"
+                    valuePropName="checked"
+                  >
+                    <Switch />
+                  </Form.Item>
+                </Col>
+              </Row>
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
