@@ -7,6 +7,7 @@ import {
   SettingOutlined,
   UnorderedListOutlined,
   MenuOutlined,
+  FileTextOutlined,
   FileImageOutlined,
 } from '@ant-design/icons'
 import Head from 'next/head'
@@ -152,6 +153,9 @@ export default function MainLayout({
             </Menu.Item>
             <Menu.Item key="/modifiers" icon={<MenuOutlined />}>
               <Link href="/modifiers">Модификаторы</Link>
+            </Menu.Item>
+            <Menu.Item key="/sms_templates" icon={<FileTextOutlined />}>
+              <Link href="/sms_templates">Шаблоны смс</Link>
             </Menu.Item>
           </Menu>
         </Sider>
