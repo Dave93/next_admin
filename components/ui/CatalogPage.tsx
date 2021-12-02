@@ -617,6 +617,28 @@ const CatalogPage = function () {
               </Form.Item>
             </Col>
           </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="desc"
+                label="Описание(RU)"
+                rules={[{ message: 'Просьба ввести текст' }]}
+              >
+                <Input.TextArea />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="desc_uz"
+                label="Описание(UZ)"
+                rules={[{ message: 'Просьба ввести текст' }]}
+              >
+                <Input.TextArea />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Drawer>
 
