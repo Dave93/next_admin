@@ -9,6 +9,7 @@ import {
   MenuOutlined,
   FileTextOutlined,
   FileImageOutlined,
+  PercentageOutlined,
 } from '@ant-design/icons'
 import Head from 'next/head'
 import { LocationMarkerIcon } from '@heroicons/react/outline'
@@ -156,6 +157,9 @@ export default function MainLayout({
             </Menu.Item>
             <Menu.Item key="/sms_templates" icon={<FileTextOutlined />}>
               <Link href="/sms_templates">Шаблоны смс</Link>
+            </Menu.Item>
+            <Menu.Item key="/sales_rules" icon={<PercentageOutlined />}>
+              <Link href="/sales_rules">Правила акций</Link>
             </Menu.Item>
           </Menu>
         </Sider>
