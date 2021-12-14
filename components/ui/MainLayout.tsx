@@ -10,6 +10,7 @@ import {
   FileTextOutlined,
   FileImageOutlined,
   PercentageOutlined,
+  CarOutlined,
 } from '@ant-design/icons'
 import Head from 'next/head'
 import { LocationMarkerIcon } from '@heroicons/react/outline'
@@ -133,6 +134,9 @@ export default function MainLayout({
               }
             >
               <Link href="/terminals">Терминалы</Link>
+            </Menu.Item>
+            <Menu.Item key="/delivery_pricing" icon={<CarOutlined />}>
+              <Link href="/delivery_pricing">Условия доставки</Link>
             </Menu.Item>
             <Menu.Item key="/order_statuses" icon={<SettingOutlined />}>
               <Link href="/order_statuses">Статусы заказов</Link>
