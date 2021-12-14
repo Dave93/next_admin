@@ -239,7 +239,8 @@ const DeliveryPricing = () => {
     // if (values.clause_products) {
     //   values.clause_products = values.clause_products.join(',')
     // }
-
+    values.active = values.active ? 1 : 0
+    values.is_default = values.is_default ? 1 : 0
     if (values.config) {
       values.config = JSON.stringify(values.config)
     }
