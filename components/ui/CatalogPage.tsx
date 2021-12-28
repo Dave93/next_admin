@@ -228,22 +228,28 @@ const CatalogPage = function () {
     }
     setShowUploader(prod.asset ? false : true)
 
-    mergeForm.resetFields()
-    mergeForm.setFieldsValue({
+    let values = {
       name_ru: name.ru,
       name_uz: name.uz,
       description_ru,
       description_uz,
       active: !!prod.active,
-    })
+      additional_sales: [] as number[],
+    }
+
+    if (prod.additional_sales) {
+      values.additional_sales = prod.additional_sales.split(',')
+    }
+
+    mergeForm.resetFields()
+    mergeForm.setFieldsValue(values)
     setMergeDrawerVisible(true)
   }
 
   const editVariant = () => {
     setEditingVariant(selectedVariant)
     let name = selectedVariant.attribute_data.name[channelName]
-    variantForm.resetFields()
-    variantForm.setFieldsValue({
+    let values = {
       name_ru: name.ru,
       name_uz: name.uz,
       custom_name: selectedVariant.custom_name,
@@ -251,7 +257,13 @@ const CatalogPage = function () {
       active: true,
       modifier_prod_id: selectedVariant.modifier_prod_id,
       box_id: selectedVariant.box_id,
-    })
+      additional_sales: [] as number[],
+    }
+    if (selectedVariant.additional_sales) {
+      values.additional_sales = selectedVariant.additional_sales.split(',')
+    }
+    variantForm.resetFields()
+    variantForm.setFieldsValue(values)
     setVariantDrawer(true)
   }
 
@@ -364,6 +376,9 @@ const CatalogPage = function () {
     setIsMergeSubmittingForm(true)
     await setAxiosCredentials()
 
+    if (values.additional_sales) {
+      values.additional_sales = values.additional_sales.join(',')
+    }
     if (selectedProducts.length == 1) {
       await axios.put(`${webAddress}/api/products/${selectedProducts[0].id}`, {
         ...values,
@@ -389,6 +404,10 @@ const CatalogPage = function () {
   const onVariantFinish = async (values: any) => {
     setIsVariantSubmittingForm(true)
     await setAxiosCredentials()
+
+    if (values.additional_sales) {
+      values.additional_sales = values.additional_sales.join(',')
+    }
 
     await axios.put(`${webAddress}/api/products/${selectedVariant.id}`, {
       ...values,
@@ -755,6 +774,24 @@ const CatalogPage = function () {
               </Form.Item>
             </Col>
           </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="additional_sales" label="Товар для доп. продажи">
+                <Select
+                  showSearch
+                  placeholder="Выберите товар"
+                  optionFilterProp="children"
+                  mode="multiple"
+                >
+                  {modifierProductList.map((prod: any) => (
+                    <Option value={prod.id} key={prod.id}>
+                      {prod.attribute_data['name'][channelName]['ru']}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Drawer>
       <Drawer
@@ -884,6 +921,27 @@ const CatalogPage = function () {
           )}
           {!isMergingMode && (
             <>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="additional_sales"
+                    label="Товар для доп. продажи"
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Выберите товар"
+                      optionFilterProp="children"
+                      mode="multiple"
+                    >
+                      {modifierProductList.map((prod: any) => (
+                        <Option value={prod.id} key={prod.id}>
+                          {prod.attribute_data['name'][channelName]['ru']}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="description_ru" label="Описание(RU)">
