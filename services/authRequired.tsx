@@ -9,6 +9,10 @@ const authRequired: FC = () => {
     if (!user) {
       router.push('/login')
     } else {
+      if (!user.user) {
+        router.push('/login')
+        return
+      }
       const userRoles = user.user.roles.map((role: any) => role.name)
       if (!userRoles.includes('admin')) {
         router.push('/permission_denied')
