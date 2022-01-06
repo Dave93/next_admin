@@ -376,6 +376,8 @@ const CatalogPage = function () {
     setIsMergeSubmittingForm(true)
     await setAxiosCredentials()
 
+    const otpToken = Cookies.get('opt_token')
+
     if (values.additional_sales) {
       values.additional_sales = values.additional_sales.join(',')
     }
@@ -386,11 +388,21 @@ const CatalogPage = function () {
         active: values.active ? '1' : '0',
       })
     } else {
-      await axios.post(`${webAddress}/api/products/merge`, {
-        ...values,
-        productIds: selectedProducts.map((prod) => prod.id),
-        categoryId: selectedCategory.id,
-      })
+      await axios.post(
+        `${webAddress}/api/products/merge`,
+        {
+          ...values,
+          productIds: selectedProducts.map((prod) => prod.id),
+          categoryId: selectedCategory.id,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${otpToken}`,
+          },
+          withCredentials: true,
+        }
+      )
     }
 
     setIsMergeSubmittingForm(false)
