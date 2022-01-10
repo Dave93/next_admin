@@ -878,6 +878,11 @@ const CatalogPage = function () {
                   <InputNumber />
                 </Form.Item>
               </Col>
+              <Col span={12}>
+                <Form.Item name="weight" label="Вес">
+                  <InputNumber />
+                </Form.Item>
+              </Col>
             </Row>
           )}
           <Row gutter={16}>
