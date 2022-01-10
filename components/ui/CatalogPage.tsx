@@ -871,6 +871,15 @@ const CatalogPage = function () {
               </Col>
             </Row>
           )}
+          {!isMergingMode && selectedProducts[0] && (
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item name="sort" label="Сортировка">
+                  <InputNumber />
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="box_id" label="Выберите коробку">
