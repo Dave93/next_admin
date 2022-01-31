@@ -409,6 +409,40 @@ const DeliveryPricing = () => {
                 </Col>
               </Row>
               <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="time_from" label="Время с">
+                    <Select>
+                      {Array.from(Array(24).keys()).map((item: any) => {
+                        return (
+                          <Select.Option
+                            value={item.toString()}
+                            key={`time_from_${item}`}
+                          >
+                            {item}
+                          </Select.Option>
+                        )
+                      })}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="time_to" label="Время до">
+                    <Select>
+                      {Array.from(Array(24).keys()).map((item: any) => {
+                        return (
+                          <Select.Option
+                            value={item.toString()}
+                            key={`time_to_${item}`}
+                          >
+                            {item}
+                          </Select.Option>
+                        )
+                      })}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="from_terminal" label="Филиал">
                     <Select
