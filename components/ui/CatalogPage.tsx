@@ -194,6 +194,7 @@ const CatalogPage = function () {
   // Description editors
   const [ruDescriptionEditorState, setRuDescriptionEditorState] = useState('')
   const [uzDescriptionEditorState, setUzDescriptionEditorState] = useState('')
+  const [enDescriptionEditorState, setEnDescriptionEditorState] = useState('')
 
   const [modifierProductList, setModifierProductList] = useState([] as any[])
 
@@ -209,6 +210,7 @@ const CatalogPage = function () {
     form.setFieldsValue({
       name_ru: name.ru,
       name_uz: name.uz,
+      name_en: name.en,
       active: !!selectedCategory.active,
       sort: selectedCategory.sort,
       order: selectedCategory.order,
@@ -221,18 +223,22 @@ const CatalogPage = function () {
     let name = prod.attribute_data.name[channelName]
     let description_ru = ''
     let description_uz = ''
+    let description_en = ''
     if (prod.attribute_data?.description) {
       let desc = prod.attribute_data?.description[channelName]
       description_ru = desc?.ru || ''
       description_uz = desc?.uz || ''
+      description_en = desc?.en || ''
     }
     setShowUploader(prod.asset ? false : true)
 
     let values = {
       name_ru: name.ru,
       name_uz: name.uz,
+      name_en: name.en,
       description_ru,
       description_uz,
+      description_en,
       active: !!prod.active,
       additional_sales: [] as number[],
     }
@@ -252,6 +258,7 @@ const CatalogPage = function () {
     let values = {
       name_ru: name.ru,
       name_uz: name.uz,
+      name_en: name.en,
       custom_name: selectedVariant.custom_name,
       custom_name_uz: selectedVariant.custom_name_uz,
       active: true,
@@ -522,6 +529,13 @@ const CatalogPage = function () {
       },
     },
     {
+      title: 'Название(EN)',
+      dataIndex: 'name_en',
+      render: (_: any, record: any) => {
+        return <div>{record?.attribute_data?.name[channelName]?.en}</div>
+      },
+    },
+    {
       title: 'Цена',
       dataIndex: 'price',
       render: (_: any, record: any) => {
@@ -628,6 +642,15 @@ const CatalogPage = function () {
                 <Input placeholder="Просьба ввести название" />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item
+                name="name_en"
+                label="Название(анг)"
+                rules={[{ required: true, message: 'Просьба ввести название' }]}
+              >
+                <Input placeholder="Просьба ввести название" />
+              </Form.Item>
+            </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
@@ -721,6 +744,15 @@ const CatalogPage = function () {
               <Form.Item
                 name="name_uz"
                 label="Название товара(узб)"
+                rules={[{ required: true, message: 'Просьба ввести название' }]}
+              >
+                <Input placeholder="Просьба ввести название" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="name_en"
+                label="Название товара(анг)"
                 rules={[{ required: true, message: 'Просьба ввести название' }]}
               >
                 <Input placeholder="Просьба ввести название" />
@@ -861,6 +893,17 @@ const CatalogPage = function () {
                 <Input placeholder="Просьба ввести заголовок" />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item
+                name="name_en"
+                label="Заголовок(EN)"
+                rules={[
+                  { required: true, message: 'Просьба ввести заголовок' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
           </Row>
           {!isMergingMode && selectedProducts[0] && (
             <Row gutter={16}>
@@ -989,6 +1032,19 @@ const CatalogPage = function () {
                       value={uzDescriptionEditorState || ''}
                       onChange={(content: string) => {
                         setUzDescriptionEditorState(content)
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item name="description_en" label="Описание(EN)">
+                    <ReactQuill
+                      theme="snow"
+                      value={enDescriptionEditorState || ''}
+                      onChange={(content: string) => {
+                        setEnDescriptionEditorState(content)
                       }}
                     />
                   </Form.Item>
