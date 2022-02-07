@@ -652,6 +652,13 @@ const CatalogPage = function () {
               </Form.Item>
             </Col>
           </Row>
+          <Row>
+            <Col span={24}>
+              <Form.Item name="icon" label="Иконка">
+                <Input placeholder="Просьба ввести иконку" />
+              </Form.Item>
+            </Col>
+          </Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="active" valuePropName="checked">
