@@ -76,6 +76,70 @@ const CatalogPage = function () {
     }
   }, [])
 
+  const categoryDropProps = {
+    name: 'file',
+    multiple: true,
+    maxCount: 1,
+    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    onChange(info: any) {
+      const { status } = info.file
+      if (status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully.`)
+      } else if (status === 'error') {
+        message.error(`${info.file.name} file upload failed.`)
+      }
+    },
+    customRequest: async (options: RcCustomRequestOptions) => {
+      const {
+        onSuccess,
+        onError,
+        file,
+        onProgress,
+      }: {
+        onProgress?: (event: UploadProgressEvent) => void
+        onError?: (
+          event: UploadRequestError | ProgressEvent,
+          body?: any
+        ) => void
+        onSuccess?: (body: any, xhr: XMLHttpRequest) => void
+        data?: object
+        filename?: string
+        file: Exclude<BeforeUploadFileType, File | boolean> | RcFile
+        withCredentials?: boolean
+        action: string
+        headers?: UploadRequestHeader
+        method: UploadRequestMethod
+      } = options
+      // console.log(arguments)
+      await setAxiosCredentials()
+      var formData = new FormData()
+      formData.append('file', file)
+      formData.append('parent', 'categories')
+      formData.append('primary', 'true')
+      const hashids = new Hashids(
+        'sale',
+        8,
+        'abcdefghijklmnopqrstuvwxyz1234567890'
+      )
+      formData.append('parent_id', hashids.encode(editingCategory.id))
+
+      const config = {
+        headers: { 'content-type': 'multipart/form-data' },
+        onUploadProgress: (event: any) => {
+          const percent: number = Math.floor((event.loaded / event.total) * 100)
+          const progress: UploadProgressEvent = { ...event, percent }
+          onProgress && onProgress(progress)
+        },
+      }
+      axios
+        .post(`${webAddress}/api/assets`, formData, config)
+        .then(({ data: response }) => {
+          onSuccess && onSuccess(response, response)
+        })
+        .catch(onError)
+    },
+  }
+
   const dropProps = {
     name: 'file',
     multiple: true,
@@ -190,6 +254,7 @@ const CatalogPage = function () {
   const [productSearchText, setProductSearchText] = useState('')
 
   const [isShowUploader, setShowUploader] = useState(false)
+  const [isCategoryShowUploader, setCategoryShowUploader] = useState(false)
 
   // Description editors
   const [ruDescriptionEditorState, setRuDescriptionEditorState] = useState('')
@@ -206,6 +271,7 @@ const CatalogPage = function () {
   const editCategory = () => {
     setEditingCategory(selectedCategory)
     let name = selectedCategory.attribute_data.name[channelName]
+    setCategoryShowUploader(selectedCategory.asset ? false : true)
     form.resetFields()
     form.setFieldsValue({
       name_ru: name.ru,
@@ -458,6 +524,19 @@ const CatalogPage = function () {
     ])
   }
 
+  const deleteCategoryAsset = async (assetId: number) => {
+    await setAxiosCredentials()
+
+    await axios.post(`${webAddress}/api/assets/unlink_asset`, {
+      assetId,
+    })
+
+    setEditingCategory({
+      ...editingCategory,
+      asset: null,
+    })
+  }
+
   const onSearch = async (value: any) => {
     setProductSearchText(value)
   }
@@ -678,6 +757,50 @@ const CatalogPage = function () {
               </Form.Item>
             </Col>
           </Row>
+          {editingCategory && (
+            <Row>
+              <Col span={24}>
+                {isCategoryShowUploader ? (
+                  <Dragger {...categoryDropProps}>
+                    <div>
+                      <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                      </p>
+                      <p className="ant-upload-text">
+                        Нажмите или перетащите файл в эту область, чтобы
+                        загрузить
+                      </p>
+                    </div>
+                  </Dragger>
+                ) : (
+                  <div>
+                    {editingCategory.asset && (
+                      <div className="relative w-28">
+                        <Image
+                          src={editingCategory.asset.link}
+                          width="100"
+                          height="100"
+                        />
+                        <div className="absolute top-0 right-0">
+                          <Button
+                            size="small"
+                            icon={<CloseOutlined />}
+                            danger
+                            shape="circle"
+                            type="primary"
+                            onClick={() =>
+                              setEditingCategory(editingCategory.asset.id)
+                            }
+                          ></Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Col>
+            </Row>
+          )}
+
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item
