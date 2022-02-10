@@ -117,7 +117,7 @@ const CatalogPage = function () {
       formData.append('parent', 'categories')
       formData.append('primary', 'true')
       const hashids = new Hashids(
-        'product_category',
+        'changeme',
         8,
         'abcdefghijklmnopqrstuvwxyz1234567890'
       )
