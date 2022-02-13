@@ -220,6 +220,14 @@ const Cities = () => {
       },
     },
     {
+      title: 'Название(EN)',
+      dataIndex: 'name_en',
+      key: 'name_en',
+      sorter: {
+        compare: (a: any, b: any) => a.name_en - b.name_en,
+      },
+    },
+    {
       title: 'Широта',
       dataIndex: 'lat',
       key: 'lat',
@@ -318,7 +326,20 @@ const Cities = () => {
                 <Col span={12}>
                   <Form.Item
                     name="name_uz"
-                    label="Название"
+                    label="Название(UZ)"
+                    rules={[
+                      { required: true, message: 'Просьба ввести название' },
+                    ]}
+                  >
+                    <Input placeholder="Просьба ввести название" />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="name_en"
+                    label="Название(EN)"
                     rules={[
                       { required: true, message: 'Просьба ввести название' },
                     ]}
