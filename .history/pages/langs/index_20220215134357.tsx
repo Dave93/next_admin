@@ -192,11 +192,6 @@ export default function Langs() {
       dataIndex: 'name_uz',
       key: 'name_uz',
     },
-    {
-      title: 'Значение(En)',
-      dataIndex: 'name_en',
-      key: 'name_en',
-    },
   ]
 
   return (
@@ -272,17 +267,6 @@ export default function Langs() {
               <Form.Item
                 name="name_uz"
                 label="Значение(UZ)"
-                rules={[{ required: true, message: 'Просьба ввести значение' }]}
-              >
-                <Input placeholder="Просьба ввести значение" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="name_en"
-                label="Значение(EN)"
                 rules={[{ required: true, message: 'Просьба ввести значение' }]}
               >
                 <Input placeholder="Просьба ввести значение" />
