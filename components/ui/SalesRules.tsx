@@ -119,6 +119,7 @@ const Sale = () => {
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
   const [modifierProductList, setModifierProductList] = useState([] as any[])
   const [channelName, setChannelName] = useState('')
+  const [terminalList, setTerminalList] = useState([] as any[])
 
   let searchInput = useRef(null)
 
@@ -186,9 +187,13 @@ const Sale = () => {
     const {
       data: { data: prodList },
     } = await axios.get(`${webAddress}/api/products`)
+    const {
+      data: { data: terminals },
+    } = await axios.get(`${webAddress}/api/terminals`)
     const channelData = await defaultChannel()
     setChannelName(channelData.name)
     setModifierProductList(prodList)
+    setTerminalList(terminals)
     setIsLoading(false)
   }
 
@@ -230,6 +235,10 @@ const Sale = () => {
 
     if (values.clause_products) {
       values.clause_products = values.clause_products.join(',')
+    }
+    console.log(values)
+    if (!values.delivery_type) {
+      values.delivery_type = null
     }
     if (editingRecord) {
       await axios.put(`${webAddress}/api/sales_rules/${editingRecord?.id}`, {
@@ -412,6 +421,22 @@ const Sale = () => {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
+                    name="active"
+                    label="Активность"
+                    valuePropName="checked"
+                  >
+                    <Switch />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="max_count" label="Макс. кол-во">
+                    <InputNumber min={1} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
                     label="Дата начала"
                     name="start_date"
                     rules={[
@@ -457,12 +482,6 @@ const Sale = () => {
                   <Form.Item
                     name="clause_products"
                     label="Товар для условия акции"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Просьба указать товар для условия акции',
-                      },
-                    ]}
                   >
                     <Select
                       showSearch
@@ -503,6 +522,44 @@ const Sale = () => {
                         </Option>
                       ))}
                     </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item name="from_terminal" label="Филиал">
+                    <Select
+                      showSearch
+                      placeholder="Выберите филиал"
+                      optionFilterProp="children"
+                      allowClear
+                    >
+                      {terminalList.map((prod: any) => (
+                        <Option value={prod.id} key={prod.id}>
+                          {prod.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="delivery_type" label="Способ доставки">
+                    <Select
+                      showSearch
+                      placeholder="Выберите способ доставки"
+                      optionFilterProp="children"
+                      allowClear
+                    >
+                      <Option value={'pickup'}>Самовывоз</Option>
+                      <Option value={'deliver'}>Доставка</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="min_price" label="Минимальная сумма заказа">
+                    <InputNumber min={1} />
                   </Form.Item>
                 </Col>
               </Row>
