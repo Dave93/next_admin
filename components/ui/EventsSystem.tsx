@@ -382,7 +382,11 @@ const Sale = () => {
       title: 'Процент выполнения',
       dataIndex: 'progress',
       render: (_: any, record: any) => {
-        return <Progress type="circle" percent={record.progress} />
+        return record.progress ? (
+          <Progress type="circle" percent={record.progress} width={50} />
+        ) : (
+          ''
+        )
       },
     },
     {
