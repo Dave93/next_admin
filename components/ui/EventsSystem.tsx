@@ -20,6 +20,7 @@ import {
   Upload,
   message,
   Checkbox,
+  Progress,
 } from 'antd'
 import {
   PlusOutlined,
@@ -380,6 +381,9 @@ const Sale = () => {
     {
       title: 'Процент выполнения',
       dataIndex: 'progress',
+      render: (_: any, record: any) => {
+        return <Progress type="circle" percent={record.progress} />
+      },
     },
     {
       title: 'Статус',
