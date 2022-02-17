@@ -162,6 +162,9 @@ export default function MainLayout({
             <Menu.Item key="/sms_templates" icon={<FileTextOutlined />}>
               <Link href="/sms_templates">Шаблоны смс</Link>
             </Menu.Item>
+            <Menu.Item key="/events_system" icon={<PercentageOutlined />}>
+              <Link href="/events_system">Рассылка</Link>
+            </Menu.Item>
             <Menu.Item key="/sales_rules" icon={<PercentageOutlined />}>
               <Link href="/sales_rules">Правила акций</Link>
             </Menu.Item>
