@@ -504,7 +504,6 @@ const Cities = () => {
                               width="100"
                               height="100"
                               layout="intrinsic"
-                              alt="Картинка"
                             />
                             <div className="absolute top-0 right-0">
                               <Button

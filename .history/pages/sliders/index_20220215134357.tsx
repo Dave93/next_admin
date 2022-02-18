@@ -347,9 +347,6 @@ const Cities = () => {
         if (record.locale == 'uz') {
           res = 'Узбекский'
         }
-        if (record.locale == 'en') {
-          res = 'Английский'
-        }
         return res
       },
     },
@@ -474,7 +471,6 @@ const Cities = () => {
                       <Option value="">Выберите вариант</Option>
                       <Option value="ru">Русский</Option>
                       <Option value="uz">Узбекский</Option>
-                      <Option value="en">Английский</Option>
                     </Select>
                   </Form.Item>
                 </Col>
@@ -504,7 +500,6 @@ const Cities = () => {
                               width="100"
                               height="100"
                               layout="intrinsic"
-                              alt="Картинка"
                             />
                             <div className="absolute top-0 right-0">
                               <Button
