@@ -527,7 +527,7 @@ const Sale = () => {
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
-                  <Form.Item name="from_terminal" label="Филиал">
+                  <Form.Item name="terminal" label="Филиал">
                     <Select
                       showSearch
                       placeholder="Выберите филиал"
