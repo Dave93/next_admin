@@ -183,7 +183,6 @@ const Sale = () => {
       ...record,
       description: record.description ? record.description : '',
       description_uz: record.description_uz ? record.description_uz : '',
-      description_en: record.description_en ? record.description_uz : '',
     })
     form.resetFields()
     setShowUploader(record.asset ? false : true)
@@ -192,7 +191,6 @@ const Sale = () => {
       ...record,
       description: record.description ? record.description : '',
       description_uz: record.description_uz ? record.description_uz : '',
-      description_en: record.description_en ? record.description_uz : '',
     }
 
     form.setFieldsValue(formData)
@@ -502,7 +500,6 @@ const Sale = () => {
                       <Option value="">Выберите вариант</Option>
                       <Option value="ru">Русский</Option>
                       <Option value="uz">Узбекский</Option>
-                      <Option value="en">Английский</Option>
                     </Select>
                   </Form.Item>
                 </Col>

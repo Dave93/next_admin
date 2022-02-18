@@ -183,7 +183,6 @@ const Sale = () => {
       ...record,
       description: record.description ? record.description : '',
       description_uz: record.description_uz ? record.description_uz : '',
-      description_en: record.description_en ? record.description_uz : '',
     })
     form.resetFields()
     setShowUploader(record.asset ? false : true)
@@ -192,7 +191,6 @@ const Sale = () => {
       ...record,
       description: record.description ? record.description : '',
       description_uz: record.description_uz ? record.description_uz : '',
-      description_en: record.description_en ? record.description_uz : '',
     }
 
     form.setFieldsValue(formData)
@@ -345,14 +343,6 @@ const Sale = () => {
       },
     },
     {
-      title: 'Заголовок(EN)',
-      dataIndex: 'name_en',
-      key: 'name_en',
-      sorter: {
-        compare: (a: any, b: any) => a.name - b.name,
-      },
-    },
-    {
       title: 'Описание(RU)',
       dataIndex: 'description',
       key: 'description',
@@ -361,11 +351,6 @@ const Sale = () => {
       title: 'Описание(UZ)',
       dataIndex: 'description_uz',
       key: 'description_uz',
-    },
-    {
-      title: 'Описание(EN)',
-      dataIndex: 'description_en',
-      key: 'description_en',
     },
   ]
 
@@ -452,15 +437,6 @@ const Sale = () => {
                     <Input placeholder="Просьба ввести название" />
                   </Form.Item>
                 </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="name_en"
-                    label="Название(EN)"
-                    rules={[{ message: 'Просьба ввести название' }]}
-                  >
-                    <Input placeholder="Просьба ввести название" />
-                  </Form.Item>
-                </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
@@ -472,13 +448,6 @@ const Sale = () => {
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="description_uz" label="Описание(UZ)">
-                    <TextArea rows={4} />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Form.Item name="description_en" label="Описание(EN)">
                     <TextArea rows={4} />
                   </Form.Item>
                 </Col>
@@ -502,7 +471,6 @@ const Sale = () => {
                       <Option value="">Выберите вариант</Option>
                       <Option value="ru">Русский</Option>
                       <Option value="uz">Узбекский</Option>
-                      <Option value="en">Английский</Option>
                     </Select>
                   </Form.Item>
                 </Col>
