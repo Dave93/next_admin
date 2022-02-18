@@ -298,13 +298,13 @@ const Sale = () => {
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
     await setAxiosCredentials()
-    if (values.start_date) {
-      values.start_date = values.start_date.toDate()
-      // values.start_date add 5 hours
-      values.start_date.setHours(values.start_date.getHours() + 5)
-    }
-    console.log(values.start_date)
     if (editingRecord) {
+      if (values.start_date) {
+        values.start_date = values.start_date.toDate()
+        // values.start_date add 5 hours
+        values.start_date.setHours(values.start_date.getHours() + 5)
+      }
+      console.log(values.start_date)
       console.log({
         ...editingRecord,
         ...values,
