@@ -46,6 +46,8 @@ import {
   UploadRequestMethod,
 } from 'rc-upload/lib/interface'
 import Image from 'next/image'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
 const { publicRuntimeConfig } = getConfig()
 let webAddress = publicRuntimeConfig.apiUrl
@@ -58,8 +60,9 @@ const { TabPane } = Tabs
 
 const { Option } = Select
 const { Dragger } = Upload
+const { TextArea } = Input
 
-const Cities = () => {
+const Sale = () => {
   const user = authRequired({})
   const {
     darkModeActive, // boolean - whether the dark mode is active or not
@@ -108,10 +111,10 @@ const Cities = () => {
       await setAxiosCredentials()
       var formData = new FormData()
       formData.append('file', file)
-      formData.append('parent', 'sliders')
+      formData.append('parent', 'sale')
       formData.append('primary', 'true')
       const hashids = new Hashids(
-        'slider',
+        'sale',
         8,
         'abcdefghijklmnopqrstuvwxyz1234567890'
       )
@@ -145,6 +148,9 @@ const Cities = () => {
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
   const [cities, setCities] = useState([] as any)
   const [isShowUploader, setShowUploader] = useState(false)
+  // Description editors
+  const [ruDescriptionEditorState, setRuDescriptionEditorState] = useState('')
+  const [uzDescriptionEditorState, setUzDescriptionEditorState] = useState('')
 
   let searchInput = useRef(null)
 
@@ -155,12 +161,12 @@ const Cities = () => {
       assetId,
     })
 
-    setEditingRecord({
-      ...editingRecord,
-      asset: editingRecord.asset.filter(
-        (asset: any) => asset.assetableId != assetId
-      ),
-    })
+    setEditingRecord([
+      {
+        ...editingRecord,
+        asset: editingRecord.asset.filter((asset: any) => asset.id != assetId),
+      },
+    ])
   }
 
   const showDrawer = () => {
@@ -173,11 +179,19 @@ const Cities = () => {
   }
 
   const editRecord = (record: any) => {
-    setEditingRecord(record)
+    setEditingRecord({
+      ...record,
+      description: record.description ? record.description : '',
+      description_uz: record.description_uz ? record.description_uz : '',
+    })
     form.resetFields()
     setShowUploader(record.asset ? false : true)
 
-    const formData = { ...record }
+    const formData = {
+      ...record,
+      description: record.description ? record.description : '',
+      description_uz: record.description_uz ? record.description_uz : '',
+    }
 
     form.setFieldsValue(formData)
     setDrawer(true)
@@ -200,7 +214,7 @@ const Cities = () => {
     setIsLoading(true)
     const {
       data: { data: result },
-    } = await axios.get(`${webAddress}/api/sliders`)
+    } = await axios.get(`${webAddress}/api/sales`)
     setData(result)
     setIsLoading(false)
   }
@@ -234,13 +248,12 @@ const Cities = () => {
     setIsSubmittingForm(true)
     await setAxiosCredentials()
     if (editingRecord) {
-      console.log(editingRecord)
-      await axios.put(`${webAddress}/api/sliders/${editingRecord?.id}`, {
+      await axios.put(`${webAddress}/api/sales/${editingRecord?.id}`, {
         ...editingRecord,
         ...values,
       })
     } else {
-      await axios.post(`${webAddress}/api/sliders/`, {
+      await axios.post(`${webAddress}/api/sales/`, {
         ...values,
       })
     }
@@ -314,50 +327,35 @@ const Cities = () => {
       key: 'sort',
     },
     {
-      title: 'Заголовок',
-      dataIndex: 'title',
-      key: 'title',
+      title: 'Заголовок(RU)',
+      dataIndex: 'name',
+      key: 'name',
       sorter: {
         compare: (a: any, b: any) => a.name - b.name,
       },
     },
     {
-      title: 'Ссылка',
-      dataIndex: 'link',
-      key: 'link',
+      title: 'Заголовок(UZ)',
+      dataIndex: 'name_uz',
+      key: 'name_uz',
+      sorter: {
+        compare: (a: any, b: any) => a.name - b.name,
+      },
     },
     {
-      title: 'Заголовок кнопки',
-      dataIndex: 'button_title',
-      key: 'button_title',
-    },
-    {
-      title: 'Описание',
+      title: 'Описание(RU)',
       dataIndex: 'description',
       key: 'description',
     },
     {
-      title: 'Язык сайта',
-      dataIndex: 'local',
-      key: 'locale',
-      render: (_: any, record: any) => {
-        let res = ''
-        if (record.locale == 'ru') {
-          res = 'Русский'
-        }
-        if (record.locale == 'uz') {
-          res = 'Узбекский'
-        }
-        if (record.locale == 'en') {
-          res = 'Английский'
-        }
-        return res
-      },
+      title: 'Описание(UZ)',
+      dataIndex: 'description_uz',
+      key: 'description_uz',
     },
   ]
 
   return (
-    <MainLayout title="Слайдеры на главной">
+    <MainLayout title="Акции">
       <div className="flex justify-between mb-3">
         <Input.Search
           loading={isLoading}
@@ -369,9 +367,7 @@ const Cities = () => {
         </Button>
       </div>
       <Drawer
-        title={
-          editingRecord ? 'Редактировать слайдер' : 'Добавить новый слайдер'
-        }
+        title={editingRecord ? 'Редактировать акцию' : 'Добавить новую акцию'}
         width={720}
         onClose={closeDrawer}
         visible={isDrawerVisible}
@@ -415,13 +411,7 @@ const Cities = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item
-                    name="sort"
-                    label="Сортировка"
-                    rules={[
-                      { required: true, message: 'Просьба указать сортировку' },
-                    ]}
-                  >
+                  <Form.Item name="sort" label="Сортировка">
                     <InputNumber />
                   </Form.Item>
                 </Col>
@@ -429,8 +419,8 @@ const Cities = () => {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    name="title"
-                    label="Название"
+                    name="name"
+                    label="Название(RU)"
                     rules={[
                       { required: true, message: 'Просьба ввести название' },
                     ]}
@@ -439,20 +429,26 @@ const Cities = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item name="link" label="Ссылка">
-                    <Input placeholder="Просьба ввести ссылку" />
+                  <Form.Item
+                    name="name_uz"
+                    label="Название(UZ)"
+                    rules={[{ message: 'Просьба ввести название' }]}
+                  >
+                    <Input placeholder="Просьба ввести название" />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item name="button_title" label="Заголовок кнопки">
-                    <Input />
+                <Col span={24}>
+                  <Form.Item name="description" label="Описание(RU)">
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
-                <Col span={12}>
-                  <Form.Item name="description" label="Описание">
-                    <Input />
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item name="description_uz" label="Описание(UZ)">
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -475,7 +471,6 @@ const Cities = () => {
                       <Option value="">Выберите вариант</Option>
                       <Option value="ru">Русский</Option>
                       <Option value="uz">Узбекский</Option>
-                      <Option value="en">Английский</Option>
                     </Select>
                   </Form.Item>
                 </Col>
@@ -483,64 +478,45 @@ const Cities = () => {
               {editingRecord && (
                 <Row>
                   <Col span={24}>
-                    <div>
-                      <Dragger {...dropProps}>
-                        <div>
-                          <p className="ant-upload-drag-icon">
-                            <InboxOutlined />
-                          </p>
-                          <p className="ant-upload-text">
-                            Нажмите или перетащите файл в эту область, чтобы
-                            загрузить
-                          </p>
-                        </div>
-                      </Dragger>
-                    </div>
-                    <div className="flex mt-4">
-                      {editingRecord &&
-                        editingRecord?.asset?.map((item: any) => (
-                          <div className="relative w-28" key={item.id}>
-                            <Image
-                              src={item.link}
-                              width="100"
-                              height="100"
-                              layout="intrinsic"
-                              alt="Картинка"
-                            />
-                            <div className="absolute top-0 right-0">
-                              <Button
-                                size="small"
-                                icon={<CloseOutlined />}
-                                danger
-                                shape="circle"
-                                type="primary"
-                                onClick={() => deleteAsset(item.assetableId)}
-                              ></Button>
-                            </div>
+                    {isShowUploader ? (
+                      <div>
+                        <Dragger {...dropProps}>
+                          <div>
+                            <p className="ant-upload-drag-icon">
+                              <InboxOutlined />
+                            </p>
+                            <p className="ant-upload-text">
+                              Нажмите или перетащите файл в эту область, чтобы
+                              загрузить
+                            </p>
                           </div>
-                        ))}
-                      {/* {selectedProducts[0].asset && (
-                          <div className="relative w-28">
-                            <Image
-                              src={selectedProducts[0].asset.link}
-                              width="100"
-                              height="100"
-                            />
-                            <div className="absolute top-0 right-0">
-                              <Button
-                                size="small"
-                                icon={<CloseOutlined />}
-                                danger
-                                shape="circle"
-                                type="primary"
-                                onClick={() =>
-                                  deleteAsset(selectedProducts[0].asset.id)
-                                }
-                              ></Button>
+                        </Dragger>
+                      </div>
+                    ) : (
+                      <div className="flex mt-4">
+                        {editingRecord &&
+                          editingRecord?.asset?.map((item: any) => (
+                            <div className="relative w-28" key={item.id}>
+                              <Image
+                                src={item.link}
+                                width="100"
+                                height="100"
+                                layout="intrinsic"
+                              />
+                              <div className="absolute top-0 right-0">
+                                <Button
+                                  size="small"
+                                  icon={<CloseOutlined />}
+                                  danger
+                                  shape="circle"
+                                  type="primary"
+                                  onClick={() => deleteAsset(item.id)}
+                                ></Button>
+                              </div>
                             </div>
-                          </div>
-                        )} */}
-                    </div>
+                          ))}
+                      </div>
+                    )}
                   </Col>
                 </Row>
               )}
@@ -561,5 +537,5 @@ const Cities = () => {
   )
 }
 
-Cities.displayName = 'Cities'
-export default Cities
+Sale.displayName = 'Sale'
+export default Sale

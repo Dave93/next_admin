@@ -302,11 +302,6 @@ export default function Menus() {
       key: 'name_uz',
     },
     {
-      title: 'Название(En)',
-      dataIndex: 'name_en',
-      key: 'name_en',
-    },
-    {
       title: 'Ссылка',
       dataIndex: 'href',
       key: 'href',
@@ -419,17 +414,6 @@ export default function Menus() {
               <Form.Item
                 name="name_uz"
                 label="Заголовок(UZ)"
-                rules={[
-                  { required: true, message: 'Просьба ввести заголовок' },
-                ]}
-              >
-                <Input placeholder="Просьба ввести заголовок" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="name_en"
-                label="Заголовок(EN)"
                 rules={[
                   { required: true, message: 'Просьба ввести заголовок' },
                 ]}

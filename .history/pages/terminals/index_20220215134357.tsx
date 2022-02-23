@@ -518,11 +518,6 @@ const Terminals = () => {
                     <Input />
                   </Form.Item>
                 </Col>
-                <Col span={12}>
-                  <Form.Item name="near_en" label="Ориентир (анг.)">
-                    <Input />
-                  </Form.Item>
-                </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={12}>
