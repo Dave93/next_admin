@@ -155,12 +155,12 @@ const Cities = () => {
       assetId,
     })
 
-    setEditingRecord([
-      {
-        ...editingRecord,
-        asset: editingRecord.asset.filter((asset: any) => asset.id != assetId),
-      },
-    ])
+    setEditingRecord({
+      ...editingRecord,
+      asset: editingRecord.asset.filter(
+        (asset: any) => asset.assetableId != assetId
+      ),
+    })
   }
 
   const showDrawer = () => {
@@ -234,6 +234,7 @@ const Cities = () => {
     setIsSubmittingForm(true)
     await setAxiosCredentials()
     if (editingRecord) {
+      console.log(editingRecord)
       await axios.put(`${webAddress}/api/sliders/${editingRecord?.id}`, {
         ...editingRecord,
         ...values,
@@ -508,7 +509,7 @@ const Cities = () => {
                                 danger
                                 shape="circle"
                                 type="primary"
-                                onClick={() => deleteAsset(item.id)}
+                                onClick={() => deleteAsset(item.assetableId)}
                               ></Button>
                             </div>
                           </div>
