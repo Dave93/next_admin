@@ -242,6 +242,7 @@ const CatalogPage = function () {
   const [data, setData] = useState([])
   const [products, setProducts] = useState([])
   const [variants, setVariants] = useState([])
+  const [cities, setCities] = useState([])
 
   // Selections
   const [selectedCategory, setSelectedCategory] = useState(null as any)
@@ -269,9 +270,13 @@ const CatalogPage = function () {
   const [variantForm] = Form.useForm()
 
   const editCategory = () => {
+    let cities = []
     setEditingCategory(selectedCategory)
     let name = selectedCategory.attribute_data.name[channelName]
     setCategoryShowUploader(selectedCategory.asset ? false : true)
+    if (selectedCategory.cities) {
+      cities = selectedCategory.cities.split(',')
+    }
     form.resetFields()
     form.setFieldsValue({
       name_ru: name.ru,
@@ -280,6 +285,7 @@ const CatalogPage = function () {
       active: !!selectedCategory.active,
       sort: selectedCategory.sort,
       order: selectedCategory.order,
+      cities,
     })
     setDrawer(true)
   }
@@ -370,6 +376,11 @@ const CatalogPage = function () {
       data: { data: prodList },
     } = await axios.get(`${webAddress}/api/products`)
     setModifierProductList(prodList)
+
+    const {
+      data: { data: cityResult },
+    } = await axios.get(`${webAddress}/api/cities/public`)
+    setCities(cityResult)
   }
 
   const fetchProducts = async (selectedId: number = 0) => {
@@ -434,10 +445,12 @@ const CatalogPage = function () {
     setIsSubmittingForm(true)
     await setAxiosCredentials()
     if (editingCategory) {
+      let cities = values.cities.join(',')
       await axios.put(`${webAddress}/api/categories/${editingCategory?.id}`, {
         ...values,
         active: values.active ? '1' : '0',
         half_mode: values.half_mode ? '1' : '0',
+        cities,
       })
     }
     setIsSubmittingForm(false)
@@ -754,6 +767,21 @@ const CatalogPage = function () {
             <Col span={12}>
               <Form.Item name="order" label="Сортировка">
                 <InputNumber />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="cities" label="Город">
+                <Select
+                  mode="multiple"
+                  placeholder="Выберите город"
+                  style={{ width: '100%' }}
+                >
+                  {cities.map((city: any) => (
+                    <Select.Option key={city.id} value={city.id}>
+                      {city.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
