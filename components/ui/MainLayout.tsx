@@ -139,6 +139,9 @@ export default function MainLayout({
             <Menu.Item key="/events_system" icon={<SendOutlined />}>
               <Link href="/events_system">Рассылка</Link>
             </Menu.Item>
+            <Menu.Item key="/mobile_push_events" icon={<SendOutlined />}>
+              <Link href="/mobile_push_events">Mobile рассылки</Link>
+            </Menu.Item>
             <Menu.Item key="/delivery_pricing" icon={<CarOutlined />}>
               <Link href="/delivery_pricing">Условия доставки</Link>
             </Menu.Item>

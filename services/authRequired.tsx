@@ -5,15 +5,24 @@ import { useRouter } from 'next/router'
 const authRequired: FC = () => {
   const { user } = useUI()
   const router = useRouter()
+
+  let userData = user
+
+  if (typeof user == 'string') {
+    try {
+      userData = JSON.parse(user)
+    } catch (e) {}
+  }
+
   useEffect(() => {
-    if (!user) {
+    if (!userData) {
       router.push('/login')
     } else {
-      if (!user.user) {
+      if (!userData.user) {
         router.push('/login')
         return
       }
-      const userRoles = user.user.roles.map((role: any) => role.name)
+      const userRoles = userData.user.roles.map((role: any) => role.name)
       if (!userRoles.includes('admin')) {
         router.push('/permission_denied')
       }
@@ -25,7 +34,7 @@ const authRequired: FC = () => {
       router.push('/login')
     }
   }*/
-  }, [user, router])
+  }, [user, router, userData])
   return user
 }
 
