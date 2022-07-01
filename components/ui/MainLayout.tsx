@@ -136,6 +136,9 @@ export default function MainLayout({
             >
               <Link href="/terminals">Терминалы</Link>
             </Menu.Item>
+            <Menu.Item key="/terminals_report" icon={<MenuOutlined />}>
+              <Link href="/terminals_report">Отчёт по филиалам</Link>
+            </Menu.Item>
             <Menu.Item key="/events_system" icon={<SendOutlined />}>
               <Link href="/events_system">Рассылка</Link>
             </Menu.Item>
