@@ -95,6 +95,90 @@ const Terminals = () => {
     if (formData.close_weekend) {
       formData.close_weekend = moment(formData.close_weekend)
     }
+    if (formData.pickup_open_1) {
+      formData.pickup_open_1 = moment(formData.pickup_open_1)
+    }
+    if (formData.pickup_open_2) {
+      formData.pickup_open_2 = moment(formData.pickup_open_2)
+    }
+    if (formData.pickup_open_3) {
+      formData.pickup_open_3 = moment(formData.pickup_open_3)
+    }
+    if (formData.pickup_open_4) {
+      formData.pickup_open_4 = moment(formData.pickup_open_4)
+    }
+    if (formData.pickup_open_5) {
+      formData.pickup_open_5 = moment(formData.pickup_open_5)
+    }
+    if (formData.pickup_open_6) {
+      formData.pickup_open_6 = moment(formData.pickup_open_6)
+    }
+    if (formData.pickup_open_7) {
+      formData.pickup_open_7 = moment(formData.pickup_open_7)
+    }
+    if (formData.pickup_close_1) {
+      formData.pickup_close_1 = moment(formData.pickup_close_1)
+    }
+    if (formData.pickup_close_2) {
+      formData.pickup_close_2 = moment(formData.pickup_close_2)
+    }
+    if (formData.pickup_close_3) {
+      formData.pickup_close_3 = moment(formData.pickup_close_3)
+    }
+    if (formData.pickup_close_4) {
+      formData.pickup_close_4 = moment(formData.pickup_close_4)
+    }
+    if (formData.pickup_close_5) {
+      formData.pickup_close_5 = moment(formData.pickup_close_5)
+    }
+    if (formData.pickup_close_6) {
+      formData.pickup_close_6 = moment(formData.pickup_close_6)
+    }
+    if (formData.pickup_close_7) {
+      formData.pickup_close_7 = moment(formData.pickup_close_7)
+    }
+    if (formData.deliver_close_1) {
+      formData.deliver_close_1 = moment(formData.deliver_close_1)
+    }
+    if (formData.deliver_close_2) {
+      formData.deliver_close_2 = moment(formData.deliver_close_2)
+    }
+    if (formData.deliver_close_3) {
+      formData.deliver_close_3 = moment(formData.deliver_close_3)
+    }
+    if (formData.deliver_close_4) {
+      formData.deliver_close_4 = moment(formData.deliver_close_4)
+    }
+    if (formData.deliver_close_5) {
+      formData.deliver_close_5 = moment(formData.deliver_close_5)
+    }
+    if (formData.deliver_close_6) {
+      formData.deliver_close_6 = moment(formData.deliver_close_6)
+    }
+    if (formData.deliver_close_7) {
+      formData.deliver_close_7 = moment(formData.deliver_close_7)
+    }
+    if (formData.deliver_open_1) {
+      formData.deliver_open_1 = moment(formData.deliver_open_1)
+    }
+    if (formData.deliver_open_2) {
+      formData.deliver_open_2 = moment(formData.deliver_open_2)
+    }
+    if (formData.deliver_open_3) {
+      formData.deliver_open_3 = moment(formData.deliver_open_3)
+    }
+    if (formData.deliver_open_4) {
+      formData.deliver_open_4 = moment(formData.deliver_open_4)
+    }
+    if (formData.deliver_open_5) {
+      formData.deliver_open_5 = moment(formData.deliver_open_5)
+    }
+    if (formData.deliver_open_6) {
+      formData.deliver_open_6 = moment(formData.deliver_open_6)
+    }
+    if (formData.deliver_open_7) {
+      formData.deliver_open_7 = moment(formData.deliver_open_7)
+    }
 
     if (formData.services) {
       formData.services = formData.services.split(',')
@@ -701,6 +785,178 @@ const Terminals = () => {
                 </Row>
               </TabPane>
             )}
+            <TabPane tab="Самовывоз" key="3">
+              <Divider orientation="left">Открытие</Divider>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="pickup_open_1" label="Пн.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_open_2" label="Вт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_open_3" label="Ср.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_open_4" label="Чт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_open_5" label="Пт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_open_6" label="Сб.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="pickup_open_7" label="Вс.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Divider orientation="left">Закрытие</Divider>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="pickup_close_1" label="Пн.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_close_2" label="Вт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_close_3" label="Ср.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_close_4" label="Чт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_close_5" label="Пт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="pickup_close_6" label="Сб.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="pickup_close_7" label="Вс.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </TabPane>
+            <TabPane tab="Доставка" key="4">
+              <Divider orientation="left">Открытие</Divider>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="deliver_open_1" label="Пн.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_open_2" label="Вт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_open_3" label="Ср.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_open_4" label="Чт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_open_5" label="Пт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_open_6" label="Сб.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="deliver_open_7" label="Вс.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Divider orientation="left">Закрытие</Divider>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="deliver_close_1" label="Пн.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_close_2" label="Вт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_close_3" label="Ср.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_close_4" label="Чт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_close_5" label="Пт.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item name="deliver_close_6" label="Сб.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Form.Item name="deliver_close_7" label="Вс.">
+                    <TimePicker format={format} />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </TabPane>
           </Tabs>
         </Form>
       </Drawer>
