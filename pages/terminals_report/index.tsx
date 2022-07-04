@@ -79,8 +79,6 @@ export default function Menus() {
         }
       )
 
-      console.log(terminalResult)
-
       if (
         typeof terminalResult.result != 'undefined' &&
         !terminalResult.result
@@ -91,7 +89,10 @@ export default function Menus() {
         setPercent(null)
       } else {
         setIsLoading(false)
-        setPercent((parseInt(terminal, 0) / result.length) * 100)
+        let key = parseInt(terminal, 0) + 1
+        console.log('key', key)
+        console.log('length', result.length)
+        setPercent(Math.ceil((key / result.length) * 100))
         setDownloadLink(terminalResult.link)
       }
     }
