@@ -54,10 +54,35 @@ export default function Menus() {
     document.body.removeChild(a)
   }
 
+  const setAxiosCredentials = async () => {
+    let csrf = Cookies.get('X-XSRF-TOKEN')
+    if (!csrf) {
+      const csrfReq = await axios(`${webAddress}/api/keldi`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          crossDomain: true,
+        },
+        withCredentials: true,
+      })
+      let { data: res } = csrfReq
+      csrf = Buffer.from(res.result, 'base64').toString('ascii')
+
+      var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
+      Cookies.set('X-XSRF-TOKEN', csrf, {
+        expires: inTenMinutes,
+      })
+    }
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  }
+
   const startCreatingReport = async () => {
     setIsLoading(true)
     setErrorMessage('')
     setDownloadLink('')
+    await setAxiosCredentials()
     const {
       data: { data: result },
     }: { data: { data: any } } = await axios.get(`${webAddress}/api/terminals`)
