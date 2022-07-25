@@ -1,5 +1,14 @@
 import Head from 'next/head'
-import { Alert, Button, Card, Col, DatePickerProps, Progress, Row } from 'antd'
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  DatePickerProps,
+  Progress,
+  Row,
+} from 'antd'
 import { DatePicker, Space } from 'antd'
 import moment from 'moment'
 import { DownloadOutlined } from '@ant-design/icons'
@@ -34,6 +43,7 @@ export default function Menus() {
   const [errorMessage, setErrorMessage] = useState('')
   const [percent, setPercent] = useState<number | null>(null)
   const [dowloadLink, setDownloadLink] = useState('')
+  const [includeAgrerator, setIncludeAggerator] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -96,6 +106,7 @@ export default function Menus() {
           dateFrom: dates[0],
           dateTo: dates[1],
           start: terminal == '0' ? true : false,
+          includeAgregator: includeAgrerator,
         },
         {
           headers: {
@@ -148,6 +159,14 @@ export default function Menus() {
             format={dateFormat}
             onCalendarChange={calendarChage}
           />
+        </Col>
+        <Col>
+          <Checkbox
+            checked={includeAgrerator}
+            onChange={() => setIncludeAggerator(!includeAgrerator)}
+          >
+            Внешние агрегаторы
+          </Checkbox>
         </Col>
         <Col>
           <Button
