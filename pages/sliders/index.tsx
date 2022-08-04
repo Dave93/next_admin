@@ -480,6 +480,18 @@ const Cities = () => {
                   </Form.Item>
                 </Col>
               </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="androidAppId" label="androidAppId">
+                    <Input placeholder="Просьба ввести androidAppId" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="iOSAppId" label="iOSAppId">
+                    <Input placeholder="Просьба ввести iOSAppId" />
+                  </Form.Item>
+                </Col>
+              </Row>
               {editingRecord && (
                 <Row>
                   <Col span={24}>
