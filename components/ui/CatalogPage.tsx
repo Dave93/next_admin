@@ -286,6 +286,7 @@ const CatalogPage = function () {
       sort: selectedCategory.sort,
       order: selectedCategory.order,
       cities,
+      three_sale: !!selectedCategory.three_sale,
     })
     setDrawer(true)
   }
@@ -752,14 +753,19 @@ const CatalogPage = function () {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item name="active" valuePropName="checked">
                 <Checkbox>Активность</Checkbox>
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item name="half_mode" valuePropName="checked">
                 <Checkbox>Режим &quot;50/50&quot;</Checkbox>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="three_sale" valuePropName="checked">
+                <Checkbox>Режим &quot;три пиццы&quot;</Checkbox>
               </Form.Item>
             </Col>
           </Row>
