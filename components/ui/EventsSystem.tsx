@@ -218,12 +218,12 @@ const Sale = () => {
       assetId,
     })
 
-    setEditingRecord([
-      {
-        ...editingRecord,
-        asset: editingRecord.asset.filter((asset: any) => asset.id != assetId),
-      },
-    ])
+    setEditingRecord({
+      ...editingRecord,
+      asset: editingRecord.asset.filter(
+        (asset: any) => asset.assetableId != assetId
+      ),
+    })
   }
 
   const editRecord = (record: any) => {
@@ -417,6 +417,7 @@ const Sale = () => {
       dataIndex: 'lang',
     },
   ]
+
   return (
     <MainLayout title="Акции">
       <div className="flex justify-between mb-3">
@@ -528,7 +529,7 @@ const Sale = () => {
                                   danger
                                   shape="circle"
                                   type="primary"
-                                  onClick={() => deleteAsset(item.id)}
+                                  onClick={() => deleteAsset(item.assetableId)}
                                 ></Button>
                               </div>
                             </div>
