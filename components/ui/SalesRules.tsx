@@ -143,13 +143,16 @@ const Sale = () => {
     if (editingObject.bonus_products) {
       editingObject.bonus_products = editingObject.bonus_products.split(',')
     }
-    console.log(record.clause_products)
     if (editingObject.clause_products) {
       editingObject.clause_products = editingObject.clause_products.split(',')
     }
 
     if (editingObject.available_days) {
       editingObject.available_days = editingObject.available_days.split(',')
+    }
+
+    if (editingObject.resources) {
+      editingObject.resources = editingObject.resources.split(',')
     }
 
     setEditingRecord({
@@ -236,9 +239,11 @@ const Sale = () => {
     if (values.clause_products) {
       values.clause_products = values.clause_products.join(',')
     }
-    console.log(values)
     if (!values.delivery_type) {
       values.delivery_type = null
+    }
+    if (values.resources) {
+      values.resources = values.resources.join(',')
     }
     if (editingRecord) {
       await axios.put(`${webAddress}/api/sales_rules/${editingRecord?.id}`, {
@@ -560,6 +565,27 @@ const Sale = () => {
                 <Col span={12}>
                   <Form.Item name="min_price" label="Минимальная сумма заказа">
                     <InputNumber min={1} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="resources" label="Источник заказа">
+                    <Select
+                      showSearch
+                      mode="tags"
+                      placeholder="Выберите источник заказа"
+                      optionFilterProp="children"
+                      tokenSeparators={[',']}
+                      allowClear
+                      options={[
+                        { label: 'Десктоп сайт', value: 'web' },
+                        { label: 'Моб. сайт', value: 'mobile_web' },
+                        { label: 'Приложение', value: 'app' },
+                        { label: 'Бот', value: 'bot' },
+                        { label: 'Колл-центр', value: 'bitrix' },
+                      ]}
+                    ></Select>
                   </Form.Item>
                 </Col>
               </Row>
