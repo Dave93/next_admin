@@ -154,6 +154,9 @@ const Sale = () => {
     if (editingObject.resources) {
       editingObject.resources = editingObject.resources.split(',')
     }
+    if (editingObject.terminals) {
+      editingObject.terminals = editingObject.terminals.split(',')
+    }
 
     setEditingRecord({
       ...editingObject,
@@ -244,6 +247,9 @@ const Sale = () => {
     }
     if (values.resources) {
       values.resources = values.resources.join(',')
+    }
+    if (values.terminals) {
+      values.terminals = values.terminals.join(',')
     }
     if (editingRecord) {
       await axios.put(`${webAddress}/api/sales_rules/${editingRecord?.id}`, {
@@ -532,11 +538,13 @@ const Sale = () => {
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
-                  <Form.Item name="terminal" label="Филиал">
+                  <Form.Item name="terminals" label="Филиал(ы)">
                     <Select
                       showSearch
+                      mode="tags"
                       placeholder="Выберите филиал"
                       optionFilterProp="children"
+                      tokenSeparators={[',']}
                       allowClear
                     >
                       {terminalList.map((prod: any) => (
