@@ -3,6 +3,7 @@ module.exports = {
   reactStrictMode: true,
   publicRuntimeConfig: {
     apiUrl: process.env.API_URL,
+    captchaKey: process.env.CAPTCHA_KEY,
   },
   async rewrites() {
     return [

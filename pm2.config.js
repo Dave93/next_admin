@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 module.exports = {
   apps: [
     {
@@ -11,6 +11,7 @@ module.exports = {
       },
       env_production: {
         PORT: process.env.NODE_PORT,
+        CAPTCHA_KEY: process.env.CAPTCHA_KEY,
         NODE_ENV: 'production',
       },
     },
