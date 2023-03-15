@@ -134,7 +134,7 @@ export default function Login() {
       startTimeout()
       setCodeSent(true)
     }
-  }, [executeRecaptcha])
+  }, [executeRecaptcha, phoneValue])
 
   const getNewCode = (e: React.SyntheticEvent<EventTarget>) => {
     e.preventDefault()
