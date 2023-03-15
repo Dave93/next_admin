@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useForm, Controller } from 'react-hook-form'
 import { useRouter } from 'next/router'
@@ -9,6 +9,7 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import getConfig from 'next/config'
 import { useUI } from '@components/ui/context'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 axios.defaults.withCredentials = true
 const { publicRuntimeConfig } = getConfig()
@@ -31,6 +32,7 @@ const errors: Errors = {
 let otpTimerRef: NodeJS.Timeout
 
 export default function Login() {
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const router = useRouter()
   const { handleSubmit, control, watch } = useForm()
   const [isCodeSent, setCodeSent] = useState(false)
@@ -71,7 +73,12 @@ export default function Login() {
     return text
   }, [otpShowCode])
 
-  const sendOtpCode = async () => {
+  const sendOtpCode = useCallback(async () => {
+    if (!executeRecaptcha) {
+      return
+    }
+
+    const captcha = await executeRecaptcha('signIn')
     setIsLoadingOtpSend(true)
     setSubmitError('')
     const csrfReq = await axios(`${webAddress}/api/keldi`, {
@@ -97,6 +104,7 @@ export default function Login() {
       {
         headers: {
           'Content-Type': 'application/json',
+          wtf: captcha,
         },
         withCredentials: true,
       }
@@ -126,7 +134,7 @@ export default function Login() {
       startTimeout()
       setCodeSent(true)
     }
-  }
+  }, [executeRecaptcha])
 
   const getNewCode = (e: React.SyntheticEvent<EventTarget>) => {
     e.preventDefault()
