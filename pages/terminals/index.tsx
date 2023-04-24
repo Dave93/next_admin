@@ -787,7 +787,7 @@ const Terminals = () => {
                 <Row gutter={16}>
                   <Col span={12}>
                     <Form.Item
-                      name="click_active"
+                      name="uzum_active"
                       label="Активность"
                       valuePropName="checked"
                     >
