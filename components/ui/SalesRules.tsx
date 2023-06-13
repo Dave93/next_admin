@@ -251,6 +251,12 @@ const Sale = () => {
     if (values.terminals) {
       values.terminals = values.terminals.join(',')
     }
+    if (values.hours_from) {
+      values.hours_from = values.hours_from.toString()
+    }
+    if (values.hours_to) {
+      values.hours_to = values.hours_to.toString()
+    }
     if (editingRecord) {
       await axios.put(`${webAddress}/api/sales_rules/${editingRecord?.id}`, {
         ...editingRecord,
@@ -472,6 +478,18 @@ const Sale = () => {
                     ]}
                   >
                     <DatePicker format={'DD.MM.YYYY'} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item label="Часы действия от" name="hours_from">
+                    <InputNumber />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label="Часы действия до" name="hours_to">
+                    <InputNumber />
                   </Form.Item>
                 </Col>
               </Row>
