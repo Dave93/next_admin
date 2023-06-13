@@ -783,6 +783,36 @@ const Terminals = () => {
                     </Form.Item>
                   </Col>
                 </Row>
+                <Divider orientation="left">Uzum</Divider>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="uzum_active"
+                      label="Активность"
+                      valuePropName="checked"
+                    >
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="uzum_service_id"
+                      label="Идентификатор услуг"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="uzum_cash_id"
+                      label="Идентификатор наличных оплат"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
               </TabPane>
             )}
             <TabPane tab="Самовывоз" key="3">
