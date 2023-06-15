@@ -16,6 +16,7 @@ import {
   Radio,
   Tabs,
   Divider,
+  InputNumber,
 } from 'antd'
 import { PlusOutlined, SearchOutlined, EditOutlined } from '@ant-design/icons'
 import getConfig from 'next/config'
@@ -904,6 +905,13 @@ const Terminals = () => {
             <TabPane tab="Доставка" key="4">
               <Divider orientation="left">Открытие</Divider>
 
+              <Row gutter={16}>
+                <Col>
+                  <Form.Item name="delivery_distance" label="Дистанция доставки (м.)">
+                    <InputNumber />
+                  </Form.Item>
+                </Col>
+              </Row>
               <Row gutter={16}>
                 <Col span={4}>
                   <Form.Item name="deliver_open_1" label="Пн.">
