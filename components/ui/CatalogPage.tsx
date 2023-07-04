@@ -969,6 +969,7 @@ const CatalogPage = function () {
                   showSearch
                   placeholder="Выберите товар"
                   optionFilterProp="children"
+                  allowClear
                 >
                   {modifierProductList.map((prod: any) => (
                     <Option value={prod.id} key={prod.id}>
