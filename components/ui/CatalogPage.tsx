@@ -334,6 +334,7 @@ const CatalogPage = function () {
       name_en: name.en,
       custom_name: selectedVariant.custom_name,
       custom_name_uz: selectedVariant.custom_name_uz,
+      custom_name_en: selectedVariant.custom_name_en,
       active: true,
       modifier_prod_id: selectedVariant.modifier_prod_id,
       box_id: selectedVariant.box_id,
@@ -924,7 +925,7 @@ const CatalogPage = function () {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 name="custom_name"
                 label="Заголовок варианта(RU)"
@@ -935,10 +936,21 @@ const CatalogPage = function () {
                 <Input placeholder="Просьба ввести заголовок" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 name="custom_name_uz"
                 label="Заголовок варианта(UZ)"
+                rules={[
+                  { required: true, message: 'Просьба ввести заголовок' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                name="custom_name_en"
+                label="Заголовок варианта(EN)"
                 rules={[
                   { required: true, message: 'Просьба ввести заголовок' },
                 ]}
@@ -957,6 +969,7 @@ const CatalogPage = function () {
                   showSearch
                   placeholder="Выберите товар"
                   optionFilterProp="children"
+                  allowClear
                 >
                   {modifierProductList.map((prod: any) => (
                     <Option value={prod.id} key={prod.id}>
