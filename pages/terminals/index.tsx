@@ -814,6 +814,26 @@ const Terminals = () => {
                     </Form.Item>
                   </Col>
                 </Row>
+                <Divider orientation="left">My Uzcard</Divider>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="my_uzcard_active"
+                      label="Активность"
+                      valuePropName="checked"
+                    >
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="my_uzcard_branch_id"
+                      label="Идентификатор услуг"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
               </TabPane>
             )}
             <TabPane tab="Самовывоз" key="3">
@@ -907,7 +927,10 @@ const Terminals = () => {
 
               <Row gutter={16}>
                 <Col>
-                  <Form.Item name="delivery_distance" label="Дистанция доставки (м.)">
+                  <Form.Item
+                    name="delivery_distance"
+                    label="Дистанция доставки (м.)"
+                  >
                     <InputNumber />
                   </Form.Item>
                 </Col>
