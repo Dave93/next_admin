@@ -178,7 +178,7 @@ const CatalogPage = function () {
       await setAxiosCredentials()
       var formData = new FormData()
       formData.append('file', file)
-      formData.append('parent', 'products')
+      formData.append('parent', 'product')
       formData.append('primary', 'true')
       console.log(selectedProducts[0].id)
       const hashids = new Hashids(
