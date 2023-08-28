@@ -132,7 +132,7 @@ const CatalogPage = function () {
         },
       }
       axios
-        .post(`${webAddress}/api/v1/assets`, formData, config)
+        .post(`${webAddress}/api/assets`, formData, config)
         .then(({ data: response }) => {
           onSuccess && onSuccess(response, response)
         })
