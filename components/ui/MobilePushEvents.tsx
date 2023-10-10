@@ -378,6 +378,13 @@ const MobilePushEvents = () => {
       },
     },
     {
+      title: 'Номер телефона',
+      dataIndex: 'phones',
+      render: (_: any, record: any) => {
+        return <span dangerouslySetInnerHTML={{ __html: record.phones }}></span>
+      },
+    },
+    {
       title: 'Текст',
       dataIndex: 'text',
       render: (_: any, record: any) => {
@@ -550,6 +557,22 @@ const MobilePushEvents = () => {
                       <Option value={'uz'}>Узбекский</Option>
                       <Option value={'en'}>Английский</Option>
                     </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name="phones"
+                    label="Телефон номер"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Пожалуйста, укажите гомер телефона',
+                      },
+                    ]}
+                  >
+                    <Input />
                   </Form.Item>
                 </Col>
               </Row>
