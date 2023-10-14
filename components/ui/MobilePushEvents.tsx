@@ -564,13 +564,7 @@ const MobilePushEvents = () => {
                 <Col span={24}>
                   <Form.Item
                     name="phones"
-                    label="Телефон номер"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Пожалуйста, укажите гомер телефона',
-                      },
-                    ]}
+                    label="Номер телефона"
                   >
                     <Input />
                   </Form.Item>

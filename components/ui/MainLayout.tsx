@@ -12,6 +12,7 @@ import {
   PercentageOutlined,
   CarOutlined,
   SendOutlined,
+  TeamOutlined
 } from '@ant-design/icons'
 import Head from 'next/head'
 import { LocationMarkerIcon } from '@heroicons/react/outline'
@@ -80,6 +81,17 @@ export default function MainLayout({
           >
             <Menu.Item key="/" icon={<HomeOutlined />}>
               <Link href="/">Главная</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="/organizations"
+              icon={
+                <TeamOutlined
+                  className="h-[16px] w-[16px]"
+                  aria-hidden="true"
+                />
+              }
+            >
+              <Link href="/organizations">Организации</Link>
             </Menu.Item>
             <Menu.Item
               key="/cities"
