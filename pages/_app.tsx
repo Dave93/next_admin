@@ -16,6 +16,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GoogleReCaptchaProvider reCaptchaKey={captchaKey} language="RU">
       <ManagedUIContext>
         <QueryClientProvider client={queryClient}>
+          {/*
+// @ts-ignore */}
           <Component {...pageProps} />
         </QueryClientProvider>
       </ManagedUIContext>

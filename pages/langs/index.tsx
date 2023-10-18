@@ -168,7 +168,10 @@ export default function Langs() {
               type="primary"
               shape="circle"
               size="small"
-              icon={<EditOutlined />}
+              icon={
+                // @ts-ignore
+              <EditOutlined />
+            }
               onClick={() => {
                 editRecord(record)
               }}
@@ -208,6 +211,8 @@ export default function Langs() {
           style={{ maxWidth: 400 }}
         />
         <Button type="primary" onClick={addRecord}>
+          {/*
+// @ts-ignore */}
           <PlusOutlined /> Добавить
         </Button>
       </div>

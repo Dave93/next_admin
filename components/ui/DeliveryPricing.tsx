@@ -296,7 +296,10 @@ const DeliveryPricing = () => {
               type="primary"
               shape="circle"
               size="small"
-              icon={<EditOutlined />}
+              icon={
+              // @ts-ignore
+              <EditOutlined />
+            }
               onClick={() => {
                 editRecord(record)
               }}
@@ -351,6 +354,9 @@ const DeliveryPricing = () => {
           style={{ maxWidth: 400 }}
         />
         <Button type="primary" onClick={addRecord}>
+
+          {/*
+// @ts-ignore */}
           <PlusOutlined /> Добавить
         </Button>
       </div>
@@ -478,7 +484,10 @@ const DeliveryPricing = () => {
                               <Form.Item
                                 {...restField}
                                 name={[name, 'range']}
-                                fieldKey={[fieldKey, 'range']}
+                                fieldKey={
+                                    // @ts-ignore
+                                [fieldKey, 'range']
+                              }
                                 rules={[
                                   {
                                     required: true,
@@ -497,7 +506,10 @@ const DeliveryPricing = () => {
                               <Form.Item
                                 {...restField}
                                 name={[name, 'price']}
-                                fieldKey={[fieldKey, 'price']}
+                                fieldKey={
+                                    // @ts-ignore
+                                [fieldKey, 'price']
+                              }
                                 rules={[
                                   {
                                     required: true,
@@ -509,6 +521,8 @@ const DeliveryPricing = () => {
                               </Form.Item>
                             </Col>
                             <Col span={2}>
+                              {/*
+// @ts-ignore */}
                               <MinusCircleOutlined
                                 className="dynamic-delete-button"
                                 onClick={() => {
@@ -523,7 +537,10 @@ const DeliveryPricing = () => {
                             type="dashed"
                             onClick={() => add()}
                             block
-                            icon={<PlusOutlined />}
+                            icon={
+                                // @ts-ignore
+                            <PlusOutlined />
+                          }
                           >
                             Добавить условие
                           </Button>

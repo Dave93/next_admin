@@ -306,7 +306,10 @@ const Sale = () => {
               type="primary"
               shape="circle"
               size="small"
-              icon={<EditOutlined />}
+              icon={
+              // @ts-ignore
+              <EditOutlined />
+            }
               onClick={() => {
                 editRecord(record)
               }}
@@ -378,6 +381,8 @@ const Sale = () => {
           style={{ maxWidth: 400 }}
         />
         <Button type="primary" onClick={addRecord}>
+          {/*
+// @ts-ignore */}
           <PlusOutlined /> Добавить
         </Button>
       </div>
@@ -515,6 +520,8 @@ const Sale = () => {
                         <Dragger {...dropProps}>
                           <div>
                             <p className="ant-upload-drag-icon">
+                              {/*
+// @ts-ignore */}
                               <InboxOutlined />
                             </p>
                             <p className="ant-upload-text">
@@ -538,7 +545,10 @@ const Sale = () => {
                               <div className="absolute top-0 right-0">
                                 <Button
                                   size="small"
-                                  icon={<CloseOutlined />}
+                                  icon={
+                                    // @ts-ignore
+                                  <CloseOutlined />
+                                }
                                   danger
                                   shape="circle"
                                   type="primary"

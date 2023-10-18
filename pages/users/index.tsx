@@ -32,10 +32,22 @@ import LoadingScreen from '@components/ui/LoadingScreen'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import Cookies from 'js-cookie'
 
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import type { FilterValue, SorterResult } from 'antd/es/table/interface';
+
 const { publicRuntimeConfig } = getConfig()
 let webAddress = publicRuntimeConfig.apiUrl
 
 axios.defaults.withCredentials = true
+
+
+interface TableParams {
+  pagination?: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: string;
+  filters?: Record<string, FilterValue>;
+}
+
 
 export default function Users() {
   const user = authRequired({})
@@ -50,11 +62,14 @@ export default function Users() {
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      current: 1,
+      pageSize: 20,
+      total: 0
+    },
+  });
   const [roles, setRoles] = useState([])
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-  })
   const [data, setData] = useState([])
   const [editingRecord, setEditingRecord] = useState(null as any)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
@@ -109,8 +124,20 @@ export default function Users() {
     setIsLoading(true)
     const {
       data: { data: result },
-    } = await axios.get(`${webAddress}/api/users`)
-    setData(result)
+    } = await axios.get(`${webAddress}/api/users?limit=${tableParams.pagination?.pageSize}&skip=${((tableParams.pagination?.current || 1) - 1) * (tableParams.pagination?.pageSize || 20)}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        // @ts-ignore
+        'Authorization': 'Bearer ' + user?.user_token,
+      }
+    })
+    setData(result.data)
+    setTableParams({
+      pagination: {
+        ...tableParams.pagination,
+        total: result.total
+      }
+    })
     setIsLoading(false)
   }
 
@@ -147,9 +174,12 @@ export default function Users() {
   }
 
   useEffect(() => {
-    fetchData()
     fetchRoles()
   }, [])
+
+  useEffect(() => {
+    fetchData()
+  }, [JSON.stringify(tableParams)])
 
   // const Tooltip =
 
@@ -184,7 +214,10 @@ export default function Users() {
                 type="primary"
                 shape="circle"
                 size="small"
-                icon={<EditOutlined />}
+                icon={
+                // @ts-ignore
+                <EditOutlined />
+              }
                 onClick={() => {
                   editRecord(record)
                 }}
@@ -192,6 +225,8 @@ export default function Users() {
             </Tooltip>
             <Popover content={content} title="Назначить роли" trigger="click">
               <Button type="primary" shape="circle" size="small">
+                {/*
+// @ts-ignore */}
                 <LockOutlined />
               </Button>
             </Popover>
@@ -257,6 +292,24 @@ export default function Users() {
     setIsLoading(false)
   }
 
+
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue>,
+    sorter: any,
+  ) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+
+    // `dataSource` is useless since `pageSize` changed
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setData([]);
+    }
+  };
+
   return (
     <MainLayout title="Пользователи">
       <div className="flex justify-between mb-3">
@@ -266,6 +319,8 @@ export default function Users() {
           style={{ maxWidth: 400 }}
         />
         <Button type="primary" onClick={addRecord}>
+          {/*
+// @ts-ignore */}
           <PlusOutlined /> Добавить
         </Button>
       </div>
@@ -332,10 +387,13 @@ export default function Users() {
         columns={columns}
         dataSource={data}
         loading={isLoading}
+        pagination={tableParams.pagination}
         rowKey="id"
         scroll={{ x: 'calc(700px + 50%)' }}
         size="small"
         bordered
+        // @ts-ignore
+        onChange={handleTableChange}
       />
     </MainLayout>
   )

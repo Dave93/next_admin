@@ -306,7 +306,10 @@ const Sale = () => {
               type="primary"
               shape="circle"
               size="small"
-              icon={<EditOutlined />}
+              icon={
+                // @ts-ignore
+              <EditOutlined />
+            }
               onClick={() => {
                 editRecord(record)
               }}
@@ -398,6 +401,8 @@ const Sale = () => {
           style={{ maxWidth: 400 }}
         />
         <Button type="primary" onClick={addRecord}>
+          {/*
+// @ts-ignore */}
           <PlusOutlined /> Добавить
         </Button>
       </div>
@@ -463,6 +468,8 @@ const Sale = () => {
                       },
                     ]}
                   >
+                    {/*
+// @ts-ignore */}
                     <DatePicker format={'DD.MM.YYYY'} />
                   </Form.Item>
                 </Col>
@@ -477,6 +484,8 @@ const Sale = () => {
                       },
                     ]}
                   >
+                    {/*
+// @ts-ignore */}
                     <DatePicker format={'DD.MM.YYYY'} />
                   </Form.Item>
                 </Col>

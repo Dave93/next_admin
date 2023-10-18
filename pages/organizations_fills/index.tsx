@@ -40,7 +40,7 @@ const { TabPane } = Tabs
 
 const { Option } = Select
 
-const Organizations = () => {
+const OrganizationsFills = () => {
   const user = authRequired({})
   const {
     darkModeActive, // boolean - whether the dark mode is active or not
@@ -60,6 +60,7 @@ const Organizations = () => {
   const [data, setData] = useState([])
   const [editingRecord, setEditingRecord] = useState(null as any)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
+  const [organizationsList, setOrganizationsList] = useState([] as any[])
 
   let searchInput = useRef(null)
 
@@ -99,7 +100,7 @@ const Organizations = () => {
     setIsLoading(true)
     const {
       data: { data: result },
-    } = await axios.get(`${webAddress}/api/organizations`, {
+    } = await axios.get(`${webAddress}/api/organizations_fills`, {
       headers: {
         'Content-Type': 'application/json',
         // @ts-ignore
@@ -107,6 +108,16 @@ const Organizations = () => {
       }
     })
     setData(result)
+    const {
+      data: { data: orgList },
+    } = await axios.get(`${webAddress}/api/organizations`, {
+      headers: {
+        'Content-Type': 'application/json',
+        // @ts-ignore
+        'Authorization': 'Bearer ' + user?.user_token,
+      }
+    })
+    setOrganizationsList(orgList)
     setIsLoading(false)
   }
 
@@ -139,7 +150,7 @@ const Organizations = () => {
     setIsSubmittingForm(true)
     await setAxiosCredentials()
     if (editingRecord) {
-      await axios.put(`${webAddress}/api/organizations/${editingRecord?.id}`, {
+      await axios.put(`${webAddress}/api/organizations_fills/${editingRecord?.id}`, {
         ...editingRecord,
         ...values,
       }, {
@@ -150,7 +161,7 @@ const Organizations = () => {
         }
       })
     } else {
-      await axios.post(`${webAddress}/api/organizations/`, {
+      await axios.post(`${webAddress}/api/organizations_fills/`, {
         ...values,
       }, {
         headers: {
@@ -200,7 +211,7 @@ const Organizations = () => {
               shape="circle"
               size="small"
               icon={
-                // @ts-ignore
+              // @ts-ignore
               <EditOutlined />
             }
               onClick={() => {
@@ -212,30 +223,38 @@ const Organizations = () => {
       },
     },
     {
-      title: 'Название',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: {
-        compare: (a: any, b: any) => a.name - b.name,
-      },
+      title: 'Дата пополнения',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (text: any) => {
+        return moment(text).format('DD.MM.YYYY')
+      }
     },
     {
-      title: 'Телефон',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: 'Номер документа',
+        dataIndex: 'doc_number',
+        key: 'doc_number',
     },
     {
-      title: 'Баланс',
+      title: 'Дата документа',
+        dataIndex: 'doc_date',
+        key: 'doc_date',
+        render: (text: any) => {
+            return moment(text).format('DD.MM.YYYY')
+        }
+    },
+    {
+      title: 'Сумма пополнения',
       dataIndex: 'balance',
       key: 'balance',
-      render: (text: any, record: any) => {
+      render: (text: any) => {
         return Intl.NumberFormat( 'ru-RU', { style: 'currency', currency: 'UZS', minimumFractionDigits: 0 }).format(text)
       }
     },
   ]
 
   return (
-    <MainLayout title="Организации">
+    <MainLayout title="Документы организаций">
       <div className="flex justify-between mb-3">
         <Input.Search
           loading={isLoading}
@@ -249,7 +268,7 @@ const Organizations = () => {
         </Button>
       </div>
       <Drawer
-        title={editingRecord ? 'Редактировать организацию' : 'Добавить новую организацию'}
+        title={editingRecord ? 'Редактировать документ организации' : 'Добавить новый документ организации'}
         width={720}
         onClose={closeDrawer}
         visible={isDrawerVisible}
@@ -285,23 +304,63 @@ const Organizations = () => {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    name="name"
-                    label="Название"
-                    rules={[
-                      { required: true, message: 'Просьба ввести название' },
-                    ]}
+                    name="org_id"
+                    label="Организация"
                   >
-                    <Input placeholder="Просьба ввести название" />
+                    <Select
+                      showSearch
+                      placeholder="Выберите организацию"
+                      optionFilterProp="children"
+                    >
+                      {organizationsList.map((prod: any) => (
+                        <Option value={prod.id} key={prod.id}>
+                          {prod.name}
+                        </Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item name="phone" label="Телефон"
+                  <Form.Item
+                    name="doc_number"
+                    label="Номер документа"
+                    rules={[
+                      { required: true, message: 'Просьба ввести номер документа' },
+                    ]}
+                  >
+                    <Input placeholder="Просьба ввести номер документа" />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    label="Дата документа"
+                    name="doc_date"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Пожалуйста, укажите дату документа',
+                      },
+                    ]}
+                  >
+                    {/*
+// @ts-ignore */}
+                    <DatePicker
+                      format={'DD.MM.YYYY'}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="balance" label="Сумма пополнения"
                              rules={[
-                               { required: true, message: 'Просьба ввести телефон' },
+                               { required: true, message: 'Просьба ввести cумма пополнения' },
                              ]}>
-                    <Input placeholder="Просьба ввести телефон" />
+                    <InputNumber placeholder="Просьба ввести cумма пополнения" style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -322,5 +381,5 @@ const Organizations = () => {
   )
 }
 
-Organizations.displayName = 'Organizations'
-export default Organizations
+OrganizationsFills.displayName = 'OrganizationsFills'
+export default OrganizationsFills

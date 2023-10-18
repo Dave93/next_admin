@@ -168,7 +168,10 @@ const SmsTemplates = () => {
               type="primary"
               shape="circle"
               size="small"
-              icon={<EditOutlined />}
+              icon={
+              // @ts-ignore
+              <EditOutlined />
+            }
               onClick={() => {
                 editRecord(record)
               }}
@@ -198,6 +201,8 @@ const SmsTemplates = () => {
           style={{ maxWidth: 400 }}
         />
         <Button type="primary" onClick={addRecord}>
+          {/*
+// @ts-ignore */}
           <PlusOutlined /> Добавить
         </Button>
       </div>

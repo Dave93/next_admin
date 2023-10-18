@@ -8,6 +8,8 @@ const DynamicComponentWithNoSSR = dynamic(
   }
 )
 
+{/*
+// @ts-ignore */}
 const SalePage = () => <DynamicComponentWithNoSSR />
 
 export default SalePage

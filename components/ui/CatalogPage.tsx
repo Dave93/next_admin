@@ -799,6 +799,8 @@ const CatalogPage = function () {
                   <Dragger {...categoryDropProps}>
                     <div>
                       <p className="ant-upload-drag-icon">
+                        {/*
+// @ts-ignore */}
                         <InboxOutlined />
                       </p>
                       <p className="ant-upload-text">
@@ -819,7 +821,10 @@ const CatalogPage = function () {
                         <div className="absolute top-0 right-0">
                           <Button
                             size="small"
-                            icon={<CloseOutlined />}
+                            icon={
+                            // @ts-ignore
+                            <CloseOutlined />
+                          }
                             danger
                             shape="circle"
                             type="primary"
@@ -1129,6 +1134,8 @@ const CatalogPage = function () {
                   <Dragger {...dropProps}>
                     <div>
                       <p className="ant-upload-drag-icon">
+                        {/*
+// @ts-ignore */}
                         <InboxOutlined />
                       </p>
                       <p className="ant-upload-text">
@@ -1149,7 +1156,10 @@ const CatalogPage = function () {
                         <div className="absolute top-0 right-0">
                           <Button
                             size="small"
-                            icon={<CloseOutlined />}
+                            icon={
+                            // @ts-ignore
+                            <CloseOutlined />
+                          }
                             danger
                             shape="circle"
                             type="primary"
@@ -1191,6 +1201,9 @@ const CatalogPage = function () {
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="description_ru" label="Описание(RU)">
+
+                    {/*
+// @ts-ignore */}
                     <ReactQuill
                       theme="snow"
                       value={ruDescriptionEditorState || ''}
@@ -1204,6 +1217,8 @@ const CatalogPage = function () {
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="description_uz" label="Описание(UZ)">
+                    {/*
+// @ts-ignore */}
                     <ReactQuill
                       theme="snow"
                       value={uzDescriptionEditorState || ''}
@@ -1217,6 +1232,8 @@ const CatalogPage = function () {
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item name="description_en" label="Описание(EN)">
+                    {/*
+// @ts-ignore */}
                     <ReactQuill
                       theme="snow"
                       value={enDescriptionEditorState || ''}
@@ -1240,12 +1257,17 @@ const CatalogPage = function () {
               onClick={editCategory}
               disabled={!selectedCategory}
             >
+              {/*
+// @ts-ignore */}
               <EditOutlined /> Редактировать
             </Button>
           </div>
           <Tree
             showLine
-            switcherIcon={<DownOutlined />}
+            switcherIcon={
+            // @ts-ignore
+            <DownOutlined />
+          }
             onSelect={onSelect}
             selectable={true}
             treeData={data}
@@ -1266,6 +1288,8 @@ const CatalogPage = function () {
                 selectedProductsCount != selectedProducts.length
               }
             >
+              {/*
+// @ts-ignore */}
               <MergeCellsOutlined /> Объединить {selectedProductsCount}
             </Button>
             <Button
@@ -1273,6 +1297,9 @@ const CatalogPage = function () {
               onClick={editProduct}
               disabled={!activeProductEdit}
             >
+
+              {/*
+// @ts-ignore */}
               <EditOutlined /> Редактировать
             </Button>
             <Input.Search
@@ -1316,6 +1343,8 @@ const CatalogPage = function () {
               onClick={editVariant}
               disabled={!selectedVariant}
             >
+              {/*
+// @ts-ignore */}
               <EditOutlined /> Редактировать
             </Button>
           </div>

@@ -30,16 +30,6 @@ const LoadingScreen: FC = () => {
           </span>
         </p>
 
-        <style global jsx>{`
-          @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400&display=swap');
-          * {
-            box-sizing: border-box;
-          }
-          *::before,
-          *::after {
-            box-sizing: border-box;
-          }
-        `}</style>
       </div>
     </div>
   )

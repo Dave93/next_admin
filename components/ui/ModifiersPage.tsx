@@ -266,7 +266,10 @@ const Modifiers = () => {
               type="primary"
               shape="circle"
               size="small"
-              icon={<EditOutlined />}
+              icon={
+                // @ts-ignore
+              <EditOutlined />
+            }
               onClick={() => {
                 editRecord(record)
               }}
@@ -411,6 +414,8 @@ const Modifiers = () => {
                       <Dragger {...dropProps}>
                         <div>
                           <p className="ant-upload-drag-icon">
+                            {/*
+// @ts-ignore */}
                             <InboxOutlined />
                           </p>
                           <p className="ant-upload-text">
@@ -434,7 +439,10 @@ const Modifiers = () => {
                             <div className="absolute top-0 right-0">
                               <Button
                                 size="small"
-                                icon={<CloseOutlined />}
+                                icon={
+                                    // @ts-ignore
+                                <CloseOutlined />
+                              }
                                 danger
                                 shape="circle"
                                 type="primary"

@@ -225,10 +225,15 @@ export default function Login() {
               {submitError}
             </div>
           )}
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <form className="mt-8 space-y-6" onSubmit={
+            // @ts-ignore
+            handleSubmit(onSubmit)
+          }>
             <div className="-space-y-px">
               <div>
                 <Form.Item label="Телефон" labelCol={{ span: 5 }}>
+                  {/*
+                    // @ts-ignore */}
                   <Controller
                     name="phone"
                     defaultValue=""

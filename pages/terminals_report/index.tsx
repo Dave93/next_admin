@@ -154,6 +154,8 @@ export default function Menus() {
     <MainLayout title="Отчёт по филиалам">
       <Row gutter={16}>
         <Col>
+          {/*
+                    // @ts-ignore */}
           <RangePicker
             defaultValue={[moment().startOf('month'), moment().endOf('month')]}
             format={dateFormat}
@@ -205,7 +207,10 @@ export default function Menus() {
                 <Button
                   type="primary"
                   shape="round"
-                  icon={<DownloadOutlined />}
+                  icon={
+                    // @ts-ignore
+                  <DownloadOutlined />
+                }
                   size="middle"
                   onClick={() => downloadReport()}
                 >

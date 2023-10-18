@@ -237,7 +237,10 @@ export default function Menus() {
                 type="primary"
                 shape="circle"
                 size="small"
-                icon={<EditOutlined />}
+                icon={
+                    // @ts-ignore
+                <EditOutlined />
+              }
                 onClick={() => {
                   editRecord(record)
                 }}
@@ -266,7 +269,10 @@ export default function Menus() {
                 type="primary"
                 shape="circle"
                 size="small"
-                icon={<EditOutlined />}
+                icon={
+                    // @ts-ignore
+                <EditOutlined />
+              }
                 onClick={() => {
                   editMenuRecord(record)
                 }}
@@ -274,7 +280,10 @@ export default function Menus() {
             </Tooltip>
             <Popconfirm
               title="Вы уверены, что хотите удалить?"
-              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              icon={
+                // @ts-ignore
+              <QuestionCircleOutlined style={{ color: 'red' }} />
+            }
               onConfirm={() => deleteMenuItem(record)}
               okText="Да"
               cancelText="Нет"
@@ -284,7 +293,10 @@ export default function Menus() {
                 danger
                 shape="circle"
                 size="small"
-                icon={<DeleteOutlined />}
+                icon={
+                    // @ts-ignore
+                <DeleteOutlined />
+              }
               />
             </Popconfirm>
           </div>
@@ -466,6 +478,8 @@ export default function Menus() {
         <Col span={8}>
           <div className="flex justify-between mb-3">
             <Button type="primary" onClick={addRecord}>
+              {/*
+// @ts-ignore */}
               <PlusOutlined /> Добавить
             </Button>
           </div>
@@ -498,6 +512,8 @@ export default function Menus() {
               onClick={addMenuRecord}
               disabled={!selectedRowKeys.length}
             >
+              {/*
+// @ts-ignore */}
               <PlusOutlined /> Добавить
             </Button>
           </div>
