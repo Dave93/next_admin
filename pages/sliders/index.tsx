@@ -33,7 +33,7 @@ import axios from 'axios'
 import { useDarkMode } from 'next-dark-mode'
 import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
-import Cookies from 'js-cookie'
+import Cookies, { set } from 'js-cookie'
 import moment from 'moment'
 import Hashids from 'hashids'
 import {
@@ -60,7 +60,8 @@ const { Option } = Select
 const { Dragger } = Upload
 
 const Cities = () => {
-  const user = authRequired({})
+  // const user = authRequired({})
+  const user = {}
   const {
     darkModeActive, // boolean - whether the dark mode is active or not
   } = useDarkMode()
@@ -105,7 +106,7 @@ const Cities = () => {
         method: UploadRequestMethod
       } = options
       // console.log(arguments)
-      await setAxiosCredentials()
+      // await setAxiosCredentials()
       var formData = new FormData()
       formData.append('file', file)
       formData.append('parent', 'sliders')
@@ -149,7 +150,7 @@ const Cities = () => {
   let searchInput = useRef(null)
 
   const deleteAsset = async (assetId: number) => {
-    await setAxiosCredentials()
+    // await setAxiosCredentials()
 
     await axios.post(`${webAddress}/api/assets/unlink`, {
       assetId,
@@ -198,43 +199,47 @@ const Cities = () => {
 
   const fetchData = async () => {
     setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/sliders`)
+    const { data: result, total } = await (
+      await fetch(
+        `${webAddress}/api/sliders?limit=${pagination.pageSize}&offset=${
+          (pagination.current - 1) * pagination.pageSize
+        }`
+      )
+    ).json()
     setData(result)
+    setPagination((prev) => ({ ...prev, total }))
     setIsLoading(false)
   }
 
-  const setAxiosCredentials = async () => {
-    let csrf = Cookies.get('X-XSRF-TOKEN')
-    if (!csrf) {
-      const csrfReq = await axios(`${webAddress}/api/keldi`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          crossDomain: true,
-        },
-        withCredentials: true,
-      })
-      let { data: res } = csrfReq
-      csrf = Buffer.from(res.result, 'base64').toString('ascii')
+  // const setAxiosCredentials = async () => {
+  //   let csrf = Cookies.get('X-XSRF-TOKEN')
+  //   if (!csrf) {
+  //     const csrfReq = await axios(`${webAddress}/api/keldi`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         crossDomain: true,
+  //       },
+  //       withCredentials: true,
+  //     })
+  //     let { data: res } = csrfReq
+  //     csrf = Buffer.from(res.result, 'base64').toString('ascii')
 
-      var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
-      Cookies.set('X-XSRF-TOKEN', csrf, {
-        expires: inTenMinutes,
-      })
-    }
-    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
-    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
-  }
+  //     var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
+  //     Cookies.set('X-XSRF-TOKEN', csrf, {
+  //       expires: inTenMinutes,
+  //     })
+  //   }
+  //   axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+  //   axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+  //   axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  // }
   const [form] = Form.useForm()
 
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
-    await setAxiosCredentials()
+    // await setAxiosCredentials()
     if (editingRecord) {
-      console.log(editingRecord)
       await axios.put(`${webAddress}/api/sliders/${editingRecord?.id}`, {
         ...editingRecord,
         ...values,
@@ -269,9 +274,9 @@ const Cities = () => {
   }
 
   const fetchCities = async () => {
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/cities`)
+    const { data: result } = await (
+      await fetch(`${webAddress}/api/cities`)
+    ).json()
     setCities(result)
   }
 
@@ -293,8 +298,8 @@ const Cities = () => {
               size="small"
               icon={
                 // @ts-ignore
-              <EditOutlined />
-            }
+                <EditOutlined />
+              }
               onClick={() => {
                 editRecord(record)
               }}
@@ -530,9 +535,9 @@ const Cities = () => {
                               <Button
                                 size="small"
                                 icon={
-                                    // @ts-ignore
-                                <CloseOutlined />
-                              }
+                                  // @ts-ignore
+                                  <CloseOutlined />
+                                }
                                 danger
                                 shape="circle"
                                 type="primary"

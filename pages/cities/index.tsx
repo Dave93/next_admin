@@ -26,6 +26,8 @@ import { useDarkMode } from 'next-dark-mode'
 import MainLayout from '@components/ui/MainLayout'
 import authRequired from '@services/authRequired'
 import LoadingScreen from '@components/ui/LoadingScreen'
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import type { FilterValue, SorterResult } from 'antd/es/table/interface'
 import Cookies from 'js-cookie'
 import moment from 'moment'
 
@@ -41,21 +43,23 @@ const { TabPane } = Tabs
 const { Option } = Select
 
 const Cities = () => {
-  const user = authRequired({})
+  // const user = authRequired({})
+  const user = {}
   const {
     darkModeActive, // boolean - whether the dark mode is active or not
   } = useDarkMode()
-  useEffect(() => {
-    if (!user) {
-      return
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (!user) {
+  //     return
+  //   }
+  // }, [])
 
   const [isDrawerVisible, setDrawer] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 20,
+    total: 0,
   })
   const [data, setData] = useState([])
   const [editingRecord, setEditingRecord] = useState(null as any)
@@ -95,53 +99,76 @@ const Cities = () => {
     // this.setState({ searchText: '' })
   }
 
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    setPagination((prev) => ({ ...prev, ...pagination }))
+  }
+
   const fetchData = async () => {
     setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/cities`)
+    const { data: result, total } = await (
+      await fetch(
+        `${webAddress}/api/cities?limit=${pagination.pageSize}&offset=${
+          (pagination.current - 1) * pagination.pageSize
+        }`
+      )
+    ).json()
     setData(result)
+    setPagination((prev) => ({ ...prev, total }))
     setIsLoading(false)
   }
 
-  const setAxiosCredentials = async () => {
-    let csrf = Cookies.get('X-XSRF-TOKEN')
-    if (!csrf) {
-      const csrfReq = await axios(`${webAddress}/api/keldi`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          crossDomain: true,
-        },
-        withCredentials: true,
-      })
-      let { data: res } = csrfReq
-      csrf = Buffer.from(res.result, 'base64').toString('ascii')
+  // const setAxiosCredentials = async () => {
+  //   let csrf = Cookies.get('X-XSRF-TOKEN')
+  //   if (!csrf) {
+  //     const csrfReq = await axios(`${webAddress}/api/keldi`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Access-Control-Allow-Credentials': true,
+  //         crossDomain: true,
+  //       },
+  //       withCredentials: true,
+  //     })
+  //     let { data: res } = csrfReq
+  //     csrf = Buffer.from(res.result, 'base64').toString('ascii')
 
-      var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
-      Cookies.set('X-XSRF-TOKEN', csrf, {
-        expires: inTenMinutes,
-      })
-    }
-    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
-    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
-  }
+  //     var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
+  //     Cookies.set('X-XSRF-TOKEN', csrf, {
+  //       expires: inTenMinutes,
+  //     })
+  //   }
+  //   axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+  //   axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+  //   axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  // }
   const [form] = Form.useForm()
 
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
-    await setAxiosCredentials()
+    // await setAxiosCredentials()
     if (editingRecord) {
-      await axios.put(`${webAddress}/api/cities/${editingRecord?.id}`, {
-        ...editingRecord,
-        ...values,
-      })
-    } else {
-      await axios.post(`${webAddress}/api/cities/`, {
-        ...values,
+      await fetch(`${webAddress}/api/cities/${editingRecord?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          ...editingRecord,
+          ...values,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
     }
+    //else {
+    // await fetch(`${webAddress}/api/cities/`, {
+    //   method: 'POST',
+    //   body: JSON.stringify({
+    //     ...values,
+    //   }),
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    // })
+    //}
     setIsSubmittingForm(false)
     closeDrawer()
     fetchData()
@@ -168,7 +195,7 @@ const Cities = () => {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [JSON.stringify(pagination)])
 
   const columns = [
     {
@@ -183,8 +210,8 @@ const Cities = () => {
               size="small"
               icon={
                 // @ts-ignore
-              <EditOutlined />
-            }
+                <EditOutlined />
+              }
               onClick={() => {
                 editRecord(record)
               }}
@@ -260,11 +287,9 @@ const Cities = () => {
           onSearch={onSearch}
           style={{ maxWidth: 400 }}
         />
-        <Button type="primary" onClick={addRecord}>
-          {/*
-// @ts-ignore */}
+        {/* <Button type="primary" onClick={addRecord}>
           <PlusOutlined /> Добавить
-        </Button>
+        </Button> */}
       </div>
       <Drawer
         title={editingRecord ? 'Редактировать город' : 'Добавить новый город'}
@@ -397,6 +422,8 @@ const Cities = () => {
         columns={columns}
         dataSource={data}
         loading={isLoading}
+        pagination={pagination}
+        onChange={handleTableChange}
         rowKey="id"
         scroll={{ x: 'calc(700px + 50%)' }}
         size="small"

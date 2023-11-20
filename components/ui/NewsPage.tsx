@@ -54,7 +54,7 @@ let webAddress = publicRuntimeConfig.apiUrl
 
 const format = 'HH:mm'
 
-axios.defaults.withCredentials = true
+// axios.defaults.withCredentials = true
 
 const { TabPane } = Tabs
 
@@ -63,15 +63,15 @@ const { Dragger } = Upload
 const { TextArea } = Input
 
 const News = () => {
-  const user = authRequired({})
-  const {
-    darkModeActive, // boolean - whether the dark mode is active or not
-  } = useDarkMode()
-  useEffect(() => {
-    if (!user) {
-      return
-    }
-  }, [])
+  // const user = authRequired({})
+  // const {
+  //   darkModeActive, // boolean - whether the dark mode is active or not
+  // } = useDarkMode()
+  // useEffect(() => {
+  //   if (!user) {
+  //     return
+  //   }
+  // }, [])
 
   const dropProps = {
     name: 'file',
@@ -108,7 +108,7 @@ const News = () => {
         method: UploadRequestMethod
       } = options
       // console.log(arguments)
-      await setAxiosCredentials()
+      // await setAxiosCredentials()
       var formData = new FormData()
       formData.append('file', file)
       formData.append('parent', 'news')
@@ -120,20 +120,29 @@ const News = () => {
       )
       formData.append('parent_id', hashids.encode(editingRecord.id))
 
-      const config = {
-        headers: { 'content-type': 'multipart/form-data' },
-        onUploadProgress: (event: any) => {
-          const percent: number = Math.floor((event.loaded / event.total) * 100)
-          const progress: UploadProgressEvent = { ...event, percent }
-          onProgress && onProgress(progress)
-        },
-      }
-      axios
-        .post(`${webAddress}/api/assets`, formData, config)
-        .then(({ data: response }) => {
-          onSuccess && onSuccess(response, response)
+      // const config = {
+      //   headers: { 'content-type': 'multipart/form-data' },
+      //   onUploadProgress: (event: any) => {
+      //     const percent: number = Math.floor((event.loaded / event.total) * 100)
+      //     const progress: UploadProgressEvent = { ...event, percent }
+      //     onProgress && onProgress(progress)
+      //   },
+      // }
+      try {
+        const response = await fetch(`${webAddress}/api/assets`, {
+          method: 'POST',
+          body: formData,
         })
-        .catch(onError)
+
+        const responseData = await response.json()
+        onSuccess && onSuccess(responseData, responseData)
+      } catch (err) {
+        console.log(err)
+      }
+      // .then(({ data: response }) => {
+      //   onSuccess && onSuccess(response, response)
+      // })
+      // .catch(onError)
     },
   }
 
@@ -155,9 +164,9 @@ const News = () => {
   let searchInput = useRef(null)
 
   const deleteAsset = async (assetId: number) => {
-    await setAxiosCredentials()
+    // await setAxiosCredentials()
 
-    await axios.post(`${webAddress}/api/assets/unlink`, {
+    await fetch(`${webAddress}/api/assets/unlink`, {
       assetId,
     })
 
@@ -212,49 +221,57 @@ const News = () => {
 
   const fetchData = async () => {
     setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/news`)
+    const { data: result, total } = await (
+      await fetch(`${webAddress}/api/news`)
+    ).json()
+    console.log(result)
     setData(result)
     setIsLoading(false)
   }
 
-  const setAxiosCredentials = async () => {
-    let csrf = Cookies.get('X-XSRF-TOKEN')
-    if (!csrf) {
-      const csrfReq = await axios(`${webAddress}/api/keldi`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          crossDomain: true,
-        },
-        withCredentials: true,
-      })
-      let { data: res } = csrfReq
-      csrf = Buffer.from(res.result, 'base64').toString('ascii')
+  // const setAxiosCredentials = async () => {
+  //   let csrf = Cookies.get('X-XSRF-TOKEN')
+  //   if (!csrf) {
+  //     const csrfReq = await axios(`${webAddress}/api/keldi`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         crossDomain: true,
+  //       },
+  //       withCredentials: true,
+  //     })
+  //     let { data: res } = csrfReq
+  //     csrf = Buffer.from(res.result, 'base64').toString('ascii')
 
-      var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
-      Cookies.set('X-XSRF-TOKEN', csrf, {
-        expires: inTenMinutes,
-      })
-    }
-    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
-    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
-  }
+  //     var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
+  //     Cookies.set('X-XSRF-TOKEN', csrf, {
+  //       expires: inTenMinutes,
+  //     })
+  //   }
+  //   axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+  //   axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+  //   axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  // }
   const [form] = Form.useForm()
 
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
-    await setAxiosCredentials()
+    // await setAxiosCredentials()
     if (editingRecord) {
-      await axios.put(`${webAddress}/api/news/${editingRecord?.id}`, {
-        ...editingRecord,
-        ...values,
+      await fetch(`${webAddress}/api/news/${editingRecord?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ ...editingRecord, ...values, id: undefined }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
     } else {
-      await axios.post(`${webAddress}/api/news/`, {
-        ...values,
+      await fetch(`${webAddress}/api/news/`, {
+        method: 'POST',
+        body: JSON.stringify({ ...values }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
     }
     setIsSubmittingForm(false)
@@ -272,19 +289,19 @@ const News = () => {
     setDrawer(true)
   }
 
-  const onSearch = async (value: any) => {
-    setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/terminals?search=${value}`)
-    setData(result)
-    setIsLoading(false)
-  }
+  // const onSearch = async (value: any) => {
+  //   setIsLoading(true)
+  //   const {
+  //     data: { data: result },
+  //   } = await axios.get(`${webAddress}/api/terminals?search=${value}`)
+  //   setData(result)
+  //   setIsLoading(false)
+  // }
 
   const fetchCities = async () => {
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/cities`)
+    const { data: result } = await (
+      await fetch(`${webAddress}/api/cities`)
+    ).json()
     setCities(result)
   }
 
@@ -305,9 +322,9 @@ const News = () => {
               shape="circle"
               size="small"
               icon={
-              // @ts-ignore
-              <EditOutlined />
-            }
+                // @ts-ignore
+                <EditOutlined />
+              }
               onClick={() => {
                 editRecord(record)
               }}
@@ -362,7 +379,7 @@ const News = () => {
       <div className="flex justify-between mb-3">
         <Input.Search
           loading={isLoading}
-          onSearch={onSearch}
+          // onSearch={onSearch}
           style={{ maxWidth: 400 }}
         />
         <Button type="primary" onClick={addRecord}>
@@ -517,8 +534,8 @@ const News = () => {
                                   size="small"
                                   icon={
                                     // @ts-ignore
-                                  <CloseOutlined />
-                                }
+                                    <CloseOutlined />
+                                  }
                                   danger
                                   shape="circle"
                                   type="primary"

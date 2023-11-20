@@ -41,7 +41,8 @@ const { TabPane } = Tabs
 const { Option } = Select
 
 const Terminals = () => {
-  const user = authRequired({})
+  // const user = authRequired({})
+  const user = {}
   const {
     darkModeActive, // boolean - whether the dark mode is active or not
   } = useDarkMode()
@@ -204,52 +205,52 @@ const Terminals = () => {
 
   const fetchData = async () => {
     setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/terminals`)
+    const { data: result } = await (
+      await fetch(`${webAddress}/api/terminals`)
+    ).json()
     setData(result)
     setIsLoading(false)
   }
 
-  const setAxiosCredentials = async () => {
-    let csrf = Cookies.get('X-XSRF-TOKEN')
-    if (!csrf) {
-      const csrfReq = await axios(`${webAddress}/api/keldi`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          crossDomain: true,
-        },
-        withCredentials: true,
-      })
-      let { data: res } = csrfReq
-      csrf = Buffer.from(res.result, 'base64').toString('ascii')
+  // const setAxiosCredentials = async () => {
+  //   let csrf = Cookies.get('X-XSRF-TOKEN')
+  //   if (!csrf) {
+  //     const csrfReq = await axios(`${webAddress}/api/keldi`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         crossDomain: true,
+  //       },
+  //       withCredentials: true,
+  //     })
+  //     let { data: res } = csrfReq
+  //     csrf = Buffer.from(res.result, 'base64').toString('ascii')
 
-      var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
-      Cookies.set('X-XSRF-TOKEN', csrf, {
-        expires: inTenMinutes,
-      })
-    }
-    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
-    axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
-  }
+  //     var inTenMinutes = new Date(new Date().getTime() + 10 * 60 * 1000)
+  //     Cookies.set('X-XSRF-TOKEN', csrf, {
+  //       expires: inTenMinutes,
+  //     })
+  //   }
+  //   axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+  //   axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf
+  //   axios.defaults.headers.common['XCSRF-TOKEN'] = csrf
+  // }
   const [form] = Form.useForm()
 
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
-    await setAxiosCredentials()
+    // await setAxiosCredentials()
     if (values.services) {
+      console.log('values.services', values.services)
       values.services = values.services.join(',')
     }
     if (editingRecord) {
-      await axios.put(`${webAddress}/api/terminals/${editingRecord?.id}`, {
-        ...editingRecord,
-        ...values,
-      })
-    } else {
-      await axios.post(`${webAddress}/api/terminals/`, {
-        ...values,
+      await fetch(`${webAddress}/api/terminals/${editingRecord.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ ...editingRecord, ...values }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
     }
     setIsSubmittingForm(false)
@@ -267,19 +268,19 @@ const Terminals = () => {
     setDrawer(true)
   }
 
-  const onSearch = async (value: any) => {
-    setIsLoading(true)
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/terminals?search=${value}`)
-    setData(result)
-    setIsLoading(false)
-  }
+  // const onSearch = async (value: any) => {
+  //   setIsLoading(true)
+  //   const {
+  //     data: { data: result },
+  //   } = await axios.get(`${webAddress}/api/terminals?search=${value}`)
+  //   setData(result)
+  //   setIsLoading(false)
+  // }
 
   const fetchCities = async () => {
-    const {
-      data: { data: result },
-    } = await axios.get(`${webAddress}/api/cities`)
+    const { data: result } = await (
+      await fetch(`${webAddress}/api/cities`)
+    ).json()
     setCities(result)
   }
 
@@ -301,8 +302,8 @@ const Terminals = () => {
               size="small"
               icon={
                 // @ts-ignore
-              <EditOutlined />
-            }
+                <EditOutlined />
+              }
               onClick={() => {
                 editRecord(record)
               }}
@@ -449,14 +450,13 @@ const Terminals = () => {
       <div className="flex justify-between mb-3">
         <Input.Search
           loading={isLoading}
-          onSearch={onSearch}
+          // onSearch={onSearch}
           style={{ maxWidth: 400 }}
         />
-        <Button type="primary" onClick={addRecord}>
-          {/*
-// @ts-ignore */}
+        {/* <Button type="primary" onClick={addRecord}>
+         
           <PlusOutlined /> Добавить
-        </Button>
+        </Button> */}
       </div>
       <Drawer
         title={
