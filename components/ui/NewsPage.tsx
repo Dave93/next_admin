@@ -167,7 +167,7 @@ const News = () => {
     // await setAxiosCredentials()
 
     await fetch(`${webAddress}/api/assets/unlink`, {
-      assetId,
+      body: JSON.stringify(assetId),
     })
 
     setEditingRecord([
