@@ -630,6 +630,13 @@ const CatalogPage = function () {
       },
     },
     {
+      title: 'Вес',
+      dataIndex: 'weight',
+      render: (_: any, record: any) => {
+        return <div>{record?.attribute_data?.name[channelName]?.en}</div>
+      },
+    },
+    {
       title: 'Цена',
       dataIndex: 'price',
       render: (_: any, record: any) => {
@@ -961,6 +968,17 @@ const CatalogPage = function () {
                 ]}
               >
                 <Input placeholder="Просьба ввести заголовок" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                name="weight"
+                label="Вес"
+                rules={[
+                  { required: true, message: 'Просьба ввести вес' },
+                ]}
+              >
+                <Input placeholder="Просьба ввести вес" />
               </Form.Item>
             </Col>
           </Row>
