@@ -339,6 +339,7 @@ const CatalogPage = function () {
       modifier_prod_id: selectedVariant.modifier_prod_id,
       box_id: selectedVariant.box_id,
       additional_sales: [] as number[],
+      weight: selectedVariant.weight
     }
     if (selectedVariant.additional_sales) {
       values.additional_sales = selectedVariant.additional_sales.split(',')
@@ -633,7 +634,7 @@ const CatalogPage = function () {
       title: 'Вес',
       dataIndex: 'weight',
       render: (_: any, record: any) => {
-        return <div>{record?.attribute_data?.name[channelName]?.en}</div>
+        return <div>{record?.weight}</div>
       },
     },
     {
