@@ -240,6 +240,7 @@ const Terminals = () => {
   const onFinish = async (values: any) => {
     setIsSubmittingForm(true)
     await setAxiosCredentials()
+    let csrf = Cookies.get('X-XSRF-TOKEN')
     if (values.services) {
       console.log('values.services', values.services)
       values.services = values.services.join(',')
@@ -250,6 +251,9 @@ const Terminals = () => {
         body: JSON.stringify({ ...editingRecord, ...values }),
         headers: {
           'Content-Type': 'application/json',
+          'X-Requested-With': csrf,
+          'X-CSRF-TOKEN': csrf,
+          'XCSRF-TOKEN': csrf,
         },
       })
     }
