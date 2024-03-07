@@ -251,9 +251,9 @@ const Terminals = () => {
         body: JSON.stringify({ ...editingRecord, ...values }),
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': csrf,
-          'X-CSRF-TOKEN': csrf,
-          'XCSRF-TOKEN': csrf,
+          'X-Requested-With': csrf!,
+          'X-CSRF-TOKEN': csrf!,
+          'XCSRF-TOKEN': csrf!,
         },
       })
     }
