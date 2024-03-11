@@ -308,8 +308,8 @@ const Sale = () => {
               size="small"
               icon={
                 // @ts-ignore
-              <EditOutlined />
-            }
+                <EditOutlined />
+              }
               onClick={() => {
                 editRecord(record)
               }}
@@ -453,6 +453,17 @@ const Sale = () => {
                 <Col span={12}>
                   <Form.Item name="max_count" label="Макс. кол-во">
                     <InputNumber min={1} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="multiple"
+                    label="Можно применять несколько раз"
+                    valuePropName="checked"
+                  >
+                    <Switch />
                   </Form.Item>
                 </Col>
               </Row>
