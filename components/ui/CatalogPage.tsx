@@ -614,7 +614,7 @@ const CatalogPage = function () {
       title: 'Активность',
       dataIndex: 'active',
       render: (_: any, record: any) => {
-        return <div className={`${record.active ? 'bg-green-500' : 'bg-red-500'}`}>{record.active}</div>
+        return <div className={`${record.active ? 'bg-green-500' : 'bg-red-500'} text-center text-white`}>{record.active}</div>
       },
     },
     {
