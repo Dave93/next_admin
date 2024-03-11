@@ -335,7 +335,7 @@ const CatalogPage = function () {
       custom_name: selectedVariant.custom_name,
       custom_name_uz: selectedVariant.custom_name_uz,
       custom_name_en: selectedVariant.custom_name_en,
-      active: true,
+      active: !!selectedVariant.active,
       modifier_prod_id: selectedVariant.modifier_prod_id,
       box_id: selectedVariant.box_id,
       additional_sales: [] as number[],
@@ -503,6 +503,7 @@ const CatalogPage = function () {
   }
 
   const onVariantFinish = async (values: any) => {
+    console.log(values)
     setIsVariantSubmittingForm(true)
     await setAxiosCredentials()
 
@@ -512,7 +513,7 @@ const CatalogPage = function () {
 
     await axios.put(`${webAddress}/api/products/${selectedVariant.id}`, {
       ...values,
-      active: true,
+      active: values.active,
     })
 
     setIsVariantSubmittingForm(false)
@@ -609,6 +610,13 @@ const CatalogPage = function () {
   }, [products, productSearchText])
 
   const productsColumns = [
+    {
+      title: 'Активность',
+      dataIndex: 'active',
+      render: (_: any, record: any) => {
+        return <div className={`${record.active ? 'bg-green-500' : 'bg-red-500'}`}>{record.active}</div>
+      },
+    },
     {
       title: 'Название(RU)',
       dataIndex: 'name_ru',
@@ -909,6 +917,11 @@ const CatalogPage = function () {
           initialValues={editingVariant ? editingVariant : undefined}
         >
           <Row gutter={16}>
+          <Col span={12}>
+                <Form.Item name="active" valuePropName="checked">
+                  <Checkbox>Активность</Checkbox>
+                </Form.Item>
+              </Col>
             <Col span={12}>
               <Form.Item
                 name="name_ru"
