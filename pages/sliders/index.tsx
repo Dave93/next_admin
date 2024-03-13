@@ -384,7 +384,7 @@ const Cities = () => {
         }
         width={720}
         onClose={closeDrawer}
-        open={isDrawerVisible}
+        visible={isDrawerVisible}
         bodyStyle={{ paddingBottom: 80 }}
         footer={
           <div
