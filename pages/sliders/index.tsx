@@ -201,7 +201,7 @@ const Cities = () => {
     setIsLoading(true)
     const { data: result, total } = await (
       await fetch(
-        `${webAddress}/api/sliders?limit=${pagination.pageSize}&offset=${
+        `${webAddress}/api/sliders?limit=${1000}&offset=${
           (pagination.current - 1) * pagination.pageSize
         }`
       )
@@ -384,7 +384,7 @@ const Cities = () => {
         }
         width={720}
         onClose={closeDrawer}
-        visible={isDrawerVisible}
+        open={isDrawerVisible}
         bodyStyle={{ paddingBottom: 80 }}
         footer={
           <div
