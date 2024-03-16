@@ -287,6 +287,7 @@ const CatalogPage = function () {
       order: selectedCategory.order,
       cities,
       three_sale: !!selectedCategory.three_sale,
+      icon: selectedCategory.icon
     })
     setDrawer(true)
   }
