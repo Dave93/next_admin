@@ -630,6 +630,7 @@ const Sale = () => {
                         { label: 'Приложение', value: 'app' },
                         { label: 'Бот', value: 'bot' },
                         { label: 'Колл-центр', value: 'bitrix' },
+                        { label: 'Uzum Tezkor', value: 'uzum' },
                       ]}
                     ></Select>
                   </Form.Item>
