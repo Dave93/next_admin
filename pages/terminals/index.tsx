@@ -79,6 +79,7 @@ const Terminals = () => {
     form.resetFields()
 
     const formData = { ...record }
+    console.log('formData', formData)
     if (formData.delivery_time) {
       formData.delivery_time = moment(formData.delivery_time)
     }
@@ -320,6 +321,9 @@ const Terminals = () => {
       title: 'Активность',
       dataIndex: 'active',
       key: 'active',
+      sorter: {
+        compare: (a: any, b: any) => Number(a.active) - Number(b.active),
+      },
       render: (_: any) => {
         return <Switch disabled defaultChecked={_} />
       },
@@ -392,16 +396,18 @@ const Terminals = () => {
         // },
       ],
     },
-    {
-      title: 'Время доставки',
-      dataIndex: 'delivery_time',
-      key: 'delivery_time',
-    },
-    {
-      title: 'Время самовывоза',
-      dataIndex: 'pickup_time',
-      key: 'pickup_time',
-    },
+    // {
+    //   title: 'Время доставки',
+    //   dataIndex: 'delivery_time',
+    //   key: 'delivery_time',
+    //   render: (value: any) => value ? moment(value).format('HH:mm') : '-',
+    // },
+    // {
+    //   title: 'Время самовывоза',
+    //   dataIndex: 'pickup_time',
+    //   key: 'pickup_time',
+    //   render: (value: any) => value ? moment(value).format('HH:mm') : '-',
+    // },
     {
       title: 'Широта',
       dataIndex: 'latitude',
@@ -419,11 +425,13 @@ const Terminals = () => {
           title: 'Время открытия',
           dataIndex: 'open_work',
           key: 'open_work',
+          render: (value: any) => value ? moment(value).format('HH:mm') : '-',
         },
         {
           title: 'Время закрытия',
           dataIndex: 'close_work',
           key: 'close_work',
+          render: (value: any) => value ? moment(value).format('HH:mm') : '-',
         },
       ],
     },
@@ -434,11 +442,13 @@ const Terminals = () => {
           title: 'Время открытия',
           dataIndex: 'open_weekend',
           key: 'open_weekend',
+          render: (value: any) => value ? moment(value).format('HH:mm') : '-',
         },
         {
           title: 'Время закрытия',
           dataIndex: 'close_weekend',
           key: 'close_weekend',
+          render: (value: any) => value ? moment(value).format('HH:mm') : '-',
         },
       ],
     },
@@ -535,7 +545,7 @@ const Terminals = () => {
                     <Switch />
                   </Form.Item>
                 </Col>
-                <Col span={12}>
+                {/* <Col span={12}>
                   <Form.Item name="delivery_type" label="Тип">
                     <Radio.Group buttonStyle="solid">
                       <Radio.Button value="all">Все</Radio.Button>
@@ -543,7 +553,7 @@ const Terminals = () => {
                       <Radio.Button value="pickup">Самовывоз</Radio.Button>
                     </Radio.Group>
                   </Form.Item>
-                </Col>
+                </Col> */}
               </Row>
               <Row gutter={16}>
                 <Col span={12}>

@@ -391,6 +391,22 @@ const Sale = () => {
         return <span>{res}</span>
       },
     },
+    {
+      title: 'Филиал(ы)',
+      dataIndex: 'terminals',
+      render: (_: any, record: any) => {
+        let res = ''
+        if (record.terminals) {
+          res = record.terminals.split(',').map((terminal: String) => +terminal)
+          // find name of terminals including in res
+          res = terminalList
+            .filter((terminal: any) => res.includes(terminal.id))
+            .map((terminal: any) => terminal.name)
+            .join(', ')
+        }
+        return <span>{res}</span>
+      },
+    },
   ]
   return (
     <MainLayout title="Акции">

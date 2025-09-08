@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\projects\\next_admin/**)",
+      "Read(/C:\\projects\\next_admin/**)",
+      "Read(/C:\\projects\\next_admin\\pages/**)",
+      "Read(/C:\\projects\\next_admin\\components\\ui/**)",
+      "Read(/C:\\projects\\next_admin\\components\\ui/**)",
+      "Read(/C:\\projects\\next_admin/**)",
+      "Bash(bun run:*)",
+      "Bash(NODE_OPTIONS=\"--openssl-legacy-provider\" bun run dev)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
